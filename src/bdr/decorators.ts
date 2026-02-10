@@ -11,40 +11,26 @@ export function Step(title: string) {
     return function (...args: any[]) {
         const [arg1, arg2, arg3] = args;
 
-        // Check for Standard Decorator (Stage 3)
-        // Context object has 'kind' property
-        if (typeof arg2 === 'object' && arg2 !== null && 'kind' in arg2 && arg2.kind === 'method') {
-            const originalMethod = arg1;
-            const context = arg2;
-
-            return async function replacementMethod(this: any, ...methodArgs: any[]) {
+        const wrapMethodInStep = (originalMethod: Function, title: string, context: any) => {
+            return async function (this: any, ...methodArgs: any[]) {
                 const stepName = formatTitle(title, methodArgs);
                 return await test.step(stepName, async () => {
                     return await originalMethod.apply(this, methodArgs);
                 });
             };
+        };
+
+        // Standard Decorator (Stage 3)
+        if (typeof arg2 === 'object' && arg2 !== null && 'kind' in arg2 && arg2.kind === 'method') {
+            return wrapMethodInStep(arg1, title, arg2);
         }
 
-        // Check for Legacy Decorator
-        // (target, propertyKey, descriptor)
+        // Legacy Decorator
         if (typeof arg2 === 'string') {
-            const target = arg1;
-            const propertyKey = arg2;
-            let descriptor = arg3;
-
-            // Fallback for missing descriptor
-            if (!descriptor && target) {
-                descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
-            }
-
+            const descriptor = arg3 || Object.getOwnPropertyDescriptor(arg1, arg2);
             if (descriptor) {
                 const originalMethod = descriptor.value;
-                descriptor.value = async function (...methodArgs: any[]) {
-                    const stepName = formatTitle(title, methodArgs);
-                    return await test.step(stepName, async () => {
-                        return await originalMethod.apply(this, methodArgs);
-                    });
-                };
+                descriptor.value = wrapMethodInStep(originalMethod, title, arg1);
                 return descriptor;
             }
         }

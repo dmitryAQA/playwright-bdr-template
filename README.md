@@ -1,5 +1,7 @@
 # Business-Driven Reporting (BDR) 
 
+![BDR Methodology](docs/images/bdr_hero_banner.png)
+
 **Business-Driven Reporting (BDR)** is a methodology that brings the clarity of BDD (Gherkin) to the robustness of Code-First automation.
 
 ![BDR Concept](docs/images/allure-example.png)

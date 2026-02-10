@@ -1,29 +1,3 @@
-/**
- * Converts an array of objects into a Markdown table string.
- * Used for attaching data tables to BDR steps.
- * 
- * @param data Array of objects
- * @returns Markdown table string
- */
-export function createTable(data: any[]): string {
-    if (!data || data.length === 0) return '';
-
-    // Get headers from the first object
-    const headers = Object.keys(data[0]);
-
-    const headerRow = `| ${headers.join(' | ')} |`;
-    const separatorRow = `| ${headers.map(() => '---').join(' | ')} |`;
-
-    const rows = data.map(row => {
-        return `| ${headers.map(header => {
-            const val = row[header];
-            return val === undefined || val === null ? '' : String(val);
-        }).join(' | ')} |`;
-    });
-
-    return `\n${headerRow}\n${separatorRow}\n${rows.join('\n')}\n`;
-}
-
 import { test } from '@playwright/test';
 
 /**
