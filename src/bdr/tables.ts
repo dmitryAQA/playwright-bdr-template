@@ -1,0 +1,99 @@
+/**
+ * Converts an array of objects into a Markdown table string.
+ * Used for attaching data tables to BDR steps.
+ * 
+ * @param data Array of objects
+ * @returns Markdown table string
+ */
+export function createTable(data: any[]): string {
+    if (!data || data.length === 0) return '';
+
+    // Get headers from the first object
+    const headers = Object.keys(data[0]);
+
+    const headerRow = `| ${headers.join(' | ')} |`;
+    const separatorRow = `| ${headers.map(() => '---').join(' | ')} |`;
+
+    const rows = data.map(row => {
+        return `| ${headers.map(header => {
+            const val = row[header];
+            return val === undefined || val === null ? '' : String(val);
+        }).join(' | ')} |`;
+    });
+
+    return `\n${headerRow}\n${separatorRow}\n${rows.join('\n')}\n`;
+}
+
+import { test } from '@playwright/test';
+
+/**
+ * Attaches a stylized HTML table to the current test report.
+ * @param name The name of the attachment (e.g., "Input Data").
+ * @param data Array of objects to display.
+ */
+export async function attachTable(name: string, data: any[]) {
+    if (!data || data.length === 0) return;
+
+    const html = generateHtmlTable(data);
+    await test.info().attach(name, {
+        body: Buffer.from(html),
+        contentType: 'text/html'
+    });
+}
+
+function generateHtmlTable(data: any[]): string {
+    const headers = Object.keys(data[0]);
+
+    const ths = headers.map(h => `<th>${h}</th>`).join('');
+
+    const trs = data.map(row => {
+        const tds = headers.map(h => {
+            const val = row[h];
+            return `<td>${val === undefined || val === null ? '' : val}</td>`;
+        }).join('');
+        return `<tr>${tds}</tr>`;
+    }).join('');
+
+    return `
+    <html>
+    <head>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+            h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+            table { 
+                border-collapse: collapse; 
+                width: 100%; 
+                margin-top: 20px;
+                box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th { 
+                background-color: #2c3e50; 
+                color: #ffffff; 
+                text-align: left; 
+                padding: 12px 15px;
+                text-transform: uppercase;
+                font-size: 14px;
+                letter-spacing: 0.05em;
+            }
+            td { 
+                padding: 12px 15px;
+                border-bottom: 1px solid #ddd;
+                font-size: 14px;
+            }
+            tr:nth-child(even) { background-color: #f8f9fa; }
+            tr:last-child td { border-bottom: none; }
+            tr:hover { background-color: #f1f4f6; transition: background-color 0.2s ease; }
+        </style>
+    </head>
+    <body>
+        <h2>Data Table</h2>
+        <table>
+            <thead><tr>${ths}</tr></thead>
+            <tbody>${trs}</tbody>
+        </table>
+    </body>
+    </html>
+    `;
+}

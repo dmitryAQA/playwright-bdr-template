@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.2.2",
+    "allure-commandline": "^2.36.0",
+    "allure-playwright": "^3.4.5",
+    "playwright": "^1.58.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "report": "allure serve allure-results"
+  }
+}
