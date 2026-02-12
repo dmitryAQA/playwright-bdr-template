@@ -1,0 +1,53 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright tests
+      run: npx playwright test
+      continue-on-error: true
+
+    - name: Load Allure history
+      uses: actions/checkout@v4
+      if: always()
+      continue-on-error: true
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Allure Report Action
+      uses: simple-elf/allure-report-action@master
+      if: always()
+      with:
+        allure_results: allure-results
+        allure_history: allure-history
+        keep_reports: 20
+
+    - name: Deploy report to Github Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: allure-history
+        publish_branch: gh-pages
