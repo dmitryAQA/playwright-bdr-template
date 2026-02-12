@@ -34,7 +34,7 @@ graph TD
 
 ---
 
-## 🛡 Stability Rules (The Anti-Flakiness Manifesto)
+## Stability Rules (The Anti-Flakiness Manifesto)
 
 Scaling fails not because of "bad tools", but because of "bad discipline". BDR mandates these rules:
 
@@ -109,7 +109,7 @@ BDR is a mindset. Here is how you implement the "Step Bridge" in other ecosystem
 
 ---
 
-## 🛠 Reference Implementation (This Repo)
+## Reference Implementation (This Repo)
 - **Playwright + TypeScript + Allure**
 - Core BDR utilities found in `src/bdr/`.
 - Demo scenarios in `tests/scaling_demo.spec.ts`.
