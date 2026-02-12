@@ -6,7 +6,7 @@ BDR is a **universal architectural contract** between your code and your reporti
 
 ---
 
-## 🏗 Universal 4-Layer Architecture (Bottom-Up)
+## Universal 4-Layer Architecture (Bottom-Up)
 
 BDR enforces a strict hierarchy to ensure that as your project grows, your maintenance costs stay linear.
 
@@ -42,10 +42,12 @@ Scaling fails not because of "bad tools", but because of "bad discipline". BDR m
 2. **Infrastructure Guards:** Use a **Global Suite Setup** (e.g., JUnit `@BeforeAll`, Pytest session fixtures, Playwright `globalSetup`) to verify DB/API health *before* starting the runner. If the environment is down, fail the whole run in 1 second.
 3. **Implicit vs Explicit:** No "hidden" waits in Flows. All synchronization (waits for element/state) happens strictly at **Level 0 (Technical)**.
 4. **Diagnostic Integrity:** Every business-critical check must attach a **Comparison Table** or Data-Snapshot to the report. Video is the detective; Tables are the spoiler.
+    
+![Rich Diagnostics Failure Example](docs/images/2-screen_2.png)
 
 ---
 
-## 🚀 Scaling Patterns for 1000+ Tests
+## Scaling Patterns for 1000+ Tests
 
 ### 1. Lazy Proxy / DI initialization
 Avoid "Fixture Hell" where every test worker initializes 100+ objects. Use lazy initialization to instantiate objects only when the test execution reaches that specific layer.
@@ -82,9 +84,11 @@ Prepare data via API (Fast/Stable) and verify behavior via UI (Realistic). BDR u
 - `[UI] Login as "Alex"` (2s)
 - `[UI] Verify Dashboard` (1s)
 
+![Hybrid API+UI Success Example](docs/images/2-screen_1.png)
+
 ---
 
-## 🌍 Porting to Other Stacks
+## Porting to Other Stacks
 
 BDR is a mindset. Here is how you implement the "Step Bridge" in other ecosystems:
 
@@ -97,7 +101,7 @@ BDR is a mindset. Here is how you implement the "Step Bridge" in other ecosystem
 
 ---
 
-## 🤝 Team Methodology
+## Team Methodology
 
 - **Automation Engineer:** Architect of Level 0-2. Focus on stability and dry code.
 - **Manual QA / Domain Expert:** Quality Censor. Reviews Allure reports as "living documentation". If a report is unreadable or technical jargon leaks in — it's a bug in the Flow layer.
