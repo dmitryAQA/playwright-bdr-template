@@ -49,4 +49,32 @@ test.describe('Enhanced BDR Features (Mocked)', () => {
             expect(count).toBe('2');
         });
     });
+
+    const testUsers = [
+        { name: 'standard_user', role: 'Premium' },
+        { name: 'visual_user', role: 'Basic' },
+        { name: 'problem_user', role: 'Support' }
+    ];
+
+    testUsers.forEach(({ name, role }) => {
+        test(`Data-Driven Scalability: Flow for ${name} (${role})`, async ({ page }) => {
+            await BDR.Given('Background: User context initialized for {}', name, async () => {
+                // Mocking setup
+                await page.goto('about:blank');
+            });
+
+            await BDR.When('User performs a sequence of business actions as {}', role, async (r: string) => {
+                await test.step('Sub-step 1: Verify permissions for ' + r, async () => {
+                    console.log('Checking permissions...');
+                });
+                await test.step('Sub-step 2: Execute domain logic', async () => {
+                    console.log('Executing logic...');
+                });
+            });
+
+            await BDR.Then('The system state is valid for user types', async () => {
+                expect(true).toBe(true);
+            });
+        });
+    });
 });

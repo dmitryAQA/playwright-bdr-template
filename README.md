@@ -1,131 +1,114 @@
-# Business-Driven Reporting (BDR) 
+# BDR Methodology: Business-Driven Reporting
 
-![BDR Methodology](docs/images/bdr_hero_banner.png)
+> **"Minimum Magic, Maximum Control"** — The engineering standard for scaling test automation to 1000+ tests.
 
-**Business-Driven Reporting (BDR)** is a methodology that brings the clarity of BDD (Gherkin) to the robustness of Code-First automation.
+BDR is a **universal architectural contract** between your code and your reporting. While this repository provides a reference implementation in Playwright and TypeScript, BDR is framework-agnostic and designed to be portable across Any stack (Python, Java, Go, etc.).
 
-![BDR Concept](docs/images/allure-example.png)
-*Example of a BDR report: Clear business steps with data tables, generated directly from code.*
+---
 
-## The BDR Manifesto
+## 🏗 Universal 4-Layer Architecture (Bottom-Up)
 
-We believe that test automation bridges the gap between Business and Engineering.
+BDR enforces a strict hierarchy to ensure that as your project grows, your maintenance costs stay linear.
 
-*   **Living Documentation** over Static Text Files (.feature).
-    *   *The code itself should be the single source of truth. No more syncing Gherkin with Step Definitions.*
-*   **Type Safety** over Regular Expressions.
-    *   *Strictly typed steps prevent rot better than loose string matching.*
-*   **Business Semantics** over Technical Implementation.
-    *   *`User completes checkout` is better than `Click Pay Button`.*
-*   **Unified Workflow** over Context Switching.
-    *   *Engineers should live in the IDE, not switch between Gherkin features and code.*
+```mermaid
+graph TD
+    Entry["<b>Level 3: Test Specs</b><br/>Entry point: Data + Business Scenarios"]
+    Domain["<b>Level 2: Domain Layer</b><br/>User Journeys (Composition of Flows)"]
+    Flow["<b>Level 1: Business Flows</b><br/>Atomic Actions (Login, AddToCart)"]
+    Technical["<b>Level 0: Technical Layer (POM)</b><br/>Selectors & Raw Infrastructure"]
 
-## Quick Start with Playwright & TypeScript
-
-*(This section describes the specific implementation of this template)*
-
-### Prerequisites
-- **Node.js** (v14+)
-- **Java Development Kit (JDK 8+)** (Required for Allure Report generation)
-
-### Setup & Run
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/dmitryAQA/playwright-bdr-template.git
-    cd playwright-bdr-template
-    ```
-
-2.  **Install dependencies & browsers**:
-    ```bash
-    npm install
-    npx playwright install
-    ```
-
-3.  **Run tests**:
-    ```bash
-    npm test
-    ```
-
-4.  **View "Living Documentation"**:
-    ```bash
-    npm run report
-    ```
-
-## Project Structure
-
-To use BDR in your own project, you only need the `src/bdr` directory. The rest of this repository serves as a template and demonstration.
-
-```text
-playwright-bdr-template/
-├── src/
-│   ├── bdr/       <-- Core BDR Engine (Copy this to your project)
-│   │   ├── bdr.ts        // Universal Given/When/Then wrappers
-│   │   ├── tables.ts     // HTML Table attachment utilities
-│   │   └── decorators.ts // Class-based @Step decorators
-│   ├── api/       <-- API Flow & Object examples
-│   ├── flows/     <-- UI Business Flow examples
-│   ├── pom/       <-- Page Object Model (Selectors)
-│   └── fixtures/  <-- Playwright Test setup
-├── docs/          <-- Documentation, Articles & Images
-└── tests/         <-- Demo Test Specs (Enterprise, Inline, API)
+    Entry --> Domain
+    Domain --> Flow
+    Entry --> Flow
+    Flow --> Technical
 ```
 
-## Two Ways to BDR
+### Responsibility Matrix
 
-BDR is designed to grow with your team.
+| Layer | Type | Responsibility | Pseudocode Example (Universal) |
+| :--- | :--- | :--- | :--- |
+| **Level 3** | **Spec** | Verification logic & Data injection. | `verify_purchase(user, "Laptop")` |
+| **Level 2** | **Domain** | Composition of multiple Flows. | `buy_item = [login, add_to_cart, pay]` |
+| **Level 1** | **Flow** | High-level action within a module. | `step("Login") { auth.perform() }` |
+| **Level 0** | **Technical** | Selectors, API Clients, DB Queries. | `page.locator("#submit").click()` |
 
-### 1. Enterprise Approach (Scalable & Strict)
-**Best for:** Long-term projects and large teams.
-**Key Features:** 3-Layer Architecture (Objects -> Flow -> Test).
+---
 
-1.  **Objects (POM/AOM)**: Technical details only (UI selectors, API endpoints). No business logic.
-2.  **Flows**: Business logic and step wrappers. Uses Objects to perform actions.
-3.  **Tests**: High-level scenarios using Flows.
+## 🛡 Stability Rules (The Anti-Flakiness Manifesto)
 
-Example (UI + API):
+Scaling fails not because of "bad tools", but because of "bad discipline". BDR mandates these rules:
+
+1. **Isolation by Contract:** A Flow at Level 1 must never know about another Flow's internal state. Communication only happens via arguments.
+2. **Infrastructure Guards:** Use a **Global Suite Setup** (e.g., JUnit `@BeforeAll`, Pytest session fixtures, Playwright `globalSetup`) to verify DB/API health *before* starting the runner. If the environment is down, fail the whole run in 1 second.
+3. **Implicit vs Explicit:** No "hidden" waits in Flows. All synchronization (waits for element/state) happens strictly at **Level 0 (Technical)**.
+4. **Diagnostic Integrity:** Every business-critical check must attach a **Comparison Table** or Data-Snapshot to the report. Video is the detective; Tables are the spoiler.
+
+---
+
+## 🚀 Scaling Patterns for 1000+ Tests
+
+### 1. Lazy Proxy / DI initialization
+Avoid "Fixture Hell" where every test worker initializes 100+ objects. Use lazy initialization to instantiate objects only when the test execution reaches that specific layer.
+
+```text
+// Pattern: Lazy Creation
+if flow_not_initialized:
+    flow = create_new_instance()
+return flow
+```
+
 ```typescript
-test('E2E: Buy Item', async ({ userApiFlow, loginFlow, cartFlow }) => {
-  await userApiFlow.createAccount(); // API: GIVEN: Account is created
-  await loginFlow.login();           // UI: WHEN: User logs in
-  await cartFlow.verifyPurchase();   // UI: THEN: Purchase is confirmed
+// Reference Implementation (Playwright Fixture)
+export const test = base.extend({
+    loginFlow: async ({ page }, use) => {
+        await use(new LoginFlow(new LoginPage(page))); // Created on demand
+    }
 });
 ```
 
-### 2. Inline Approach (Flexible & Fast)
-**Best for:** POCs, scripts, debugging.
-**Key Features:** No classes, direct step wrappers.
-
-Example:
-```typescript
-await BDR.Given('User is on login page', async () => { ... });
-await BDR.When('User clicks login', async () => { ... });
+```go
+// Go Example: BDR Contract via Explicit Wrappers
+func (f *LoginFlow) Login(user User) {
+    bdr.Step("Login as "+user.Name, func() {
+        f.LoginPage.Open()
+        f.LoginPage.Fill(user)
+    })
+}
 ```
 
-## Key Features
-
-### The "Semantic Step" Philosophy
-We don't enforce Gherkin at the compiler level. Instead, we treat **GIVEN/WHEN/THEN** as a *naming convention* inside our universal step wrapper. This gives you the readability of BDD without the rigidity of regex parsers.
-
-### Maintenance without the Pain
-In Cucumber, renaming a step requires syncing code and text. In BDR, you just rename the method or string in your code. Your IDE's refactoring tools handle the rest.
-
-### Data Transparency
-Arguments passed to methods are automatically interpolated into the report. You see exactly what data was used in the test.
-
-### Parameterized Steps
-Automatic step title formatting with arguments:
-```typescript
-// Report: "WHEN: User logs in as 'admin'"
-await BDR.When('User logs in as {}', 'admin', async () => { ... });
-```
-
-### Universal: UI & API
-BDR blurs the line between test types. In your reports, browser actions and API requests look identical—as logical business steps—allowing you to build seamless E2E scenarios of any complexity.
-
-## Business Value
-- **Faster Onboarding**: New engineers use IDE hints (IntelliSense) to assemble tests.
-- **Reduced Flakiness**: Architecture prevents common type-related errors.
-- **Trust**: Product managers can read Allure reports and understand the test logic without looking at the code.
+### 2. Hybrid API+UI Orchestration
+Prepare data via API (Fast/Stable) and verify behavior via UI (Realistic). BDR unifies these into one report:
+- `[API] Create User "Alex"` (300ms)
+- `[UI] Login as "Alex"` (2s)
+- `[UI] Verify Dashboard` (1s)
 
 ---
-*Created by the BDR methodology developer, Dmitry Sorvachev.*
+
+## 🌍 Porting to Other Stacks
+
+BDR is a mindset. Here is how you implement the "Step Bridge" in other ecosystems:
+
+| Stack | Reporting Bridge | Implementation Pattern |
+| :--- | :--- | :--- |
+| **Python** | `allure.step` | Decorators on Flow-class methods. |
+| **Java** | `@Step` (Allure/JUnit) | Annotated methods in Business-logic classes. |
+| **Go** | `allure-go / BDR.Step` | Functional wrappers around Flow actions. |
+| **Robot** | `Library Keywords` | Grouping keywords into Domain/Flow resources. |
+
+---
+
+## 🤝 Team Methodology
+
+- **Automation Engineer:** Architect of Level 0-2. Focus on stability and dry code.
+- **Manual QA / Domain Expert:** Quality Censor. Reviews Allure reports as "living documentation". If a report is unreadable or technical jargon leaks in — it's a bug in the Flow layer.
+- **Developer:** Can contribute to Level 0 (Infrastructure) or Level 1 (Flows) during feature development.
+
+---
+
+## 🛠 Reference Implementation (This Repo)
+- **Playwright + TypeScript + Allure**
+- Core BDR utilities found in `src/bdr/`.
+- Demo scenarios in `tests/scaling_demo.spec.ts`.
+
+---
+*BDR is the bridge between Engineering Excellence and Business Transparency.*

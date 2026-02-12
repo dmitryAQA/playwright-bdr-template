@@ -71,3 +71,28 @@ function generateHtmlTable(data: any[]): string {
     </html>
     `;
 }
+
+/**
+ * Compares two objects and attaches a side-by-side comparison table to the report.
+ * @param name Name of the attachment
+ * @param expected Object containing expected values
+ * @param actual Object containing actual values
+ */
+export async function attachCompareTable(name: string, expected: any, actual: any) {
+    const allKeys = Array.from(new Set([...Object.keys(expected), ...Object.keys(actual)]));
+
+    const comparisonData = allKeys.map(key => {
+        const exp = expected[key];
+        const act = actual[key];
+        const isMatch = JSON.stringify(exp) === JSON.stringify(act);
+
+        return {
+            Field: key,
+            Expected: exp === undefined ? '<undefined>' : JSON.stringify(exp),
+            Actual: act === undefined ? '<undefined>' : JSON.stringify(act),
+            Result: isMatch ? '✅ MATCH' : '❌ MISMATCH'
+        };
+    });
+
+    await attachTable(name, comparisonData);
+}
