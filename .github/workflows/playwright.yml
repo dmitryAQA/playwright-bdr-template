@@ -65,7 +65,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: allure-history
         publish_branch: gh-pages
-        force_orphan: true # Изменено на true
+        force_orphan: false # Изменено на false, чтобы не затирать историю каждый раз
 
     - name: Upload Pages artifact
       if: always()
