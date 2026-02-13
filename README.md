@@ -1,4 +1,4 @@
-# BDR Methodology: Business-Driven Reporting
+# BDR Methodology: Business-Driven Living Requiments
 
 > **"Minimum Magic, Maximum Control"** — The engineering standard for scaling test automation to 1000+ tests.
 
@@ -92,7 +92,7 @@ Prepare data via API (Fast/Stable) and verify behavior via UI (Realistic). BDR u
 
 BDR is a mindset. Here is how you implement the "Step Bridge" in other ecosystems:
 
-| Stack | Reporting Bridge | Implementation Pattern |
+| Stack |  Bridge | Implementation Pattern |
 | :--- | :--- | :--- |
 | **Python** | `allure.step` | Decorators on Flow-class methods. |
 | **Java** | `@Step` (Allure/JUnit) | Annotated methods in Business-logic classes. |
