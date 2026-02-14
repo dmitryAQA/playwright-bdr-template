@@ -1,4 +1,4 @@
-# BDR Methodology: Business-Driven Living Requiments
+# BDR Methodology: Business-Driven Living Requirements
 
 > **"Minimum Magic, Maximum Control"** — The engineering standard for scaling test automation to 1000+ tests.
 
