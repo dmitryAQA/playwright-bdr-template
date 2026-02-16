@@ -1,0 +1,3 @@
+Adding Sauce Labs Backpack to cart
+Adding Sauce Labs Bike Light to cart
+Verifying count is 2
