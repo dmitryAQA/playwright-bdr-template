@@ -1,118 +1,53 @@
-# BDR Methodology: Business-Driven Living Requiments
+# Playwright BDR Template (TypeScript Reference Implementation)
 
-> **"Minimum Magic, Maximum Control"** — The engineering standard for scaling test automation to 1000+ tests.
+> **"Minimum Magic, Maximum Control"** — The engineering standard for scaling test automation to 1000+ tests without Gherkin.
 
-BDR is a **universal architectural contract** between your code and your reporting. While this repository provides a reference implementation in Playwright and TypeScript, BDR is framework-agnostic and designed to be portable across Any stack (Python, Java, Go, etc.).
+[![Live Demo](https://img.shields.io/badge/Live-Demo_Report-brightgreen)](https://dmitryaqa.github.io/playwright-bdr-template/)
+[![Methodology](https://img.shields.io/badge/Read-Manifest-blue)](https://github.com/dmitryAQA/bdr-methodology)
 
----
+This repository is the **Reference Implementation** of the [BDR Methodology](https://github.com/dmitryAQA/bdr-methodology) using **Playwright** and **TypeScript**. 
 
-## Universal 4-Layer Architecture (Bottom-Up)
+It demonstrates how to implement **Behavior-Driven Living Requirements** in code, generating beautiful reports without maintaining `.feature` files.
 
-BDR enforces a strict hierarchy to ensure that as your project grows, your maintenance costs stay linear.
+## 🔗 Key Resources
 
-```mermaid
-graph TD
-    Entry["<b>Level 3: Test Specs</b><br/>Entry point: Data + Business Scenarios"]
-    Domain["<b>Level 2: Domain Layer</b><br/>User Journeys (Composition of Flows)"]
-    Flow["<b>Level 1: Business Flows</b><br/>Atomic Actions (Login, AddToCart)"]
-    Technical["<b>Level 0: Technical Layer (POM)</b><br/>Selectors & Raw Infrastructure"]
+- **📘 [BDR Methodology Manifesto](https://github.com/dmitryAQA/bdr-methodology)**: The full theory, 4-layer architecture, anti-flakiness principles, and guides for other languages.
+- **🎬 [Live Allure Report](https://dmitryaqa.github.io/playwright-bdr-template/)**: See how the code below translates into "Living Documentation".
 
-    Entry --> Domain
-    Domain --> Flow
-    Entry --> Flow
-    Flow --> Technical
+## 🚀 Quick Start
+
+### 1. Install dependencies
+```bash
+npm ci
+npx playwright install
 ```
 
-### Responsibility Matrix
-
-| Layer | Type | Responsibility | Pseudocode Example (Universal) |
-| :--- | :--- | :--- | :--- |
-| **Level 3** | **Spec** | Verification logic & Data injection. | `verify_purchase(user, "Laptop")` |
-| **Level 2** | **Domain** | Composition of multiple Flows. | `buy_item = [login, add_to_cart, pay]` |
-| **Level 1** | **Flow** | High-level action within a module. | `step("Login") { auth.perform() }` |
-| **Level 0** | **Technical** | Selectors, API Clients, DB Queries. | `page.locator("#submit").click()` |
-
----
-
-## Stability Rules (The Anti-Flakiness Manifesto)
-
-Scaling fails not because of "bad tools", but because of "bad discipline". BDR mandates these rules:
-
-1. **Isolation by Contract:** A Flow at Level 1 must never know about another Flow's internal state. Communication only happens via arguments.
-2. **Infrastructure Guards:** Use a **Global Suite Setup** (e.g., JUnit `@BeforeAll`, Pytest session fixtures, Playwright `globalSetup`) to verify DB/API health *before* starting the runner. If the environment is down, fail the whole run in 1 second.
-3. **Implicit vs Explicit:** No "hidden" waits in Flows. All synchronization (waits for element/state) happens strictly at **Level 0 (Technical)**.
-4. **Diagnostic Integrity:** Every business-critical check must attach a **Comparison Table** or Data-Snapshot to the report. Video is the detective; Tables are the spoiler.
-    
-![Rich Diagnostics Failure Example](docs/images/2-screen_2.png)
-
----
-
-## Scaling Patterns for 1000+ Tests
-
-### 1. Lazy Proxy / DI initialization
-Avoid "Fixture Hell" where every test worker initializes 100+ objects. Use lazy initialization to instantiate objects only when the test execution reaches that specific layer.
-
-```text
-// Pattern: Lazy Creation
-if flow_not_initialized:
-    flow = create_new_instance()
-return flow
+### 2. Run demonstration
+```bash
+# Run all BDR demo tests
+npx playwright test tests/scaling_demo.spec.ts
 ```
 
-```typescript
-// Reference Implementation (Playwright Fixture)
-export const test = base.extend({
-    loginFlow: async ({ page }, use) => {
-        await use(new LoginFlow(new LoginPage(page))); // Created on demand
-    }
-});
+### 3. View Report
+```bash
+# Generate and open Allure report
+npx allure generate ./allure-results -o ./allure-report --clean
+npx allure open ./allure-report
 ```
 
-```go
-// Go Example: BDR Contract via Explicit Wrappers
-func (f *LoginFlow) Login(user User) {
-    bdr.Step("Login as "+user.Name, func() {
-        f.LoginPage.Open()
-        f.LoginPage.Fill(user)
-    })
-}
-```
+## 📂 Project Structure
 
-### 2. Hybrid API+UI Orchestration
-Prepare data via API (Fast/Stable) and verify behavior via UI (Realistic). BDR unifies these into one report:
-- `[API] Create User "Alex"` (300ms)
-- `[UI] Login as "Alex"` (2s)
-- `[UI] Verify Dashboard` (1s)
+This template strictly follows the BDR responsibility layers:
 
-![Hybrid API+UI Success Example](docs/images/2-screen_1.png)
-
----
-
-## Porting to Other Stacks
-
-BDR is a mindset. Here is how you implement the "Step Bridge" in other ecosystems:
-
-| Stack |  Bridge | Implementation Pattern |
+| Directory | Layer | Description |
 | :--- | :--- | :--- |
-| **Python** | `allure.step` | Decorators on Flow-class methods. |
-| **Java** | `@Step` (Allure/JUnit) | Annotated methods in Business-logic classes. |
-| **Go** | `allure-go / BDR.Step` | Functional wrappers around Flow actions. |
-| **Robot** | `Library Keywords` | Grouping keywords into Domain/Flow resources. |
+| **`tests/`** | **Level 3 (Spec)** | The entry point. Pure business intent. Reads like a story. |
+| **`src/flows/`** | **Level 2 (Domain)** | Business Logic. Creating users, adding items to cart. Reusable components. |
+| **`src/pom/`** | **Level 1 (Page)** | Page Objects. Selectors and raw Playwright interactions. |
+| **`src/bdr/`** | **Core** | Utilities for Reporting, Tables, and Decorators. **Do not modify.** |
 
----
+## 🤝 Contributing
 
-## Team Methodology
+This repository is for the **TypeScript** implementation.
 
-- **Automation Engineer:** Architect of Level 0-2. Focus on stability and dry code.
-- **Manual QA / Domain Expert:** Quality Censor. Reviews Allure reports as "living documentation". If a report is unreadable or technical jargon leaks in — it's a bug in the Flow layer.
-- **Developer:** Can contribute to Level 0 (Infrastructure) or Level 1 (Flows) during feature development.
-
----
-
-## Reference Implementation (This Repo)
-- **Playwright + TypeScript + Allure**
-- Core BDR utilities found in `src/bdr/`.
-- Demo scenarios in `tests/scaling_demo.spec.ts`.
-
----
-*BDR is the bridge between Engineering Excellence and Business Transparency.*
+If you are looking for **Python**, **Java**, or **C#** examples, please check the [Community Implementations](https://github.com/dmitryAQA/bdr-methodology#community-implementations) section in the main methodology repository.
