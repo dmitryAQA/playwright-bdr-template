@@ -14,8 +14,7 @@ test.describe('Enhanced BDR Features (Mocked)', () => {
         const username = 'standard_user';
         // Parameters are passed to the step body AND formatted in the title
         await BDR.When('User logs in as {}', username, async (u: string) => {
-            console.log(`Logging in as ${u}`);
-            // No actual interaction needed, we are testing the Step Reporting
+            // Reporting is handled by BDR step wrapper
         });
 
         await BDR.Then('Inventory page should be visible', async () => {
@@ -40,13 +39,14 @@ test.describe('Enhanced BDR Features (Mocked)', () => {
 
             // 2. Simulate processing items
             for (const item of items) {
-                console.log(`Adding ${item.name} to cart`);
+                await test.step(`Processing item: ${item.name}`, async () => {
+                    // Actual logic would go here
+                });
             }
         });
 
         await BDR.Then('Cart badge shows {}', '2', async (count: string) => {
-            console.log(`Verifying count is ${count}`);
-            expect(count).toBe('2');
+            expect(count, 'The badge should display exactly 2').toBe('2');
         });
     });
 

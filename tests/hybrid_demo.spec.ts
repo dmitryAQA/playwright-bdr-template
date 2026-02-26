@@ -4,11 +4,11 @@ import { attachTable } from '../src/bdr/tables';
 
 test.describe('Hybrid BDR Demo: API + UI', () => {
 
-    test('E2E: Rapid Checkout (Success - Mocked API)', async ({ userFlow, loginFlow, inventoryFlow, cartFlow }) => {
+    test('E2E: Rapid Checkout (Success - Mocked API)', async ({ userFlow, loginFlow, inventoryFlow, cartFlow }: any) => {
         // Direct object mocking (no crutches, just JS)
         // @ts-ignore
         const api = userFlow.userApi;
-        api.login = async () => ({ ok: () => true, json: async () => ({ success: true }) } as any);
+        api.login = async () => ({ ok: () => true, status: () => 200, json: async () => ({ success: true }) } as any);
 
         const userData = {
             username: 'premium_user',
@@ -35,7 +35,7 @@ test.describe('Hybrid BDR Demo: API + UI', () => {
         });
     });
 
-    test('E2E: Rapid Checkout (Failure - Real API No Backend)', async ({ userFlow, loginFlow }) => {
+    test('E2E: Rapid Checkout (Failure - Real API No Backend)', async ({ userFlow, loginFlow }: any) => {
         const expectedData = {
             status: 'Premium',
             permissions: 'Full',

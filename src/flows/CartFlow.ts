@@ -9,7 +9,7 @@ export class CartFlow {
     async verifyItemInCart(productName: string) {
         // We use the POM to find the element, then assert on it
         const item = await this.cartPage.getCartItem(productName);
-        await expect(item).toBeVisible();
+        await expect.soft(item).toBeVisible();
     }
 
     @Step('WHEN: User clicks Checkout')

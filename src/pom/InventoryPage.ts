@@ -1,19 +1,16 @@
 import { Page, Locator } from '@playwright/test';
 
 export class InventoryPage {
-    readonly inventoryList: Locator;
-    readonly cartBadge: Locator;
-    readonly cartLink: Locator;
+    constructor(private page: Page) { }
 
-    constructor(private page: Page) {
-        this.inventoryList = page.locator('.inventory_list');
-        this.cartBadge = page.locator('.shopping_cart_badge');
-        this.cartLink = page.locator('.shopping_cart_link');
-    }
+    get inventoryList() { return this.page.getByTestId('inventory-list'); }
+    get cartBadge() { return this.page.getByTestId('shopping-cart-badge'); }
+    get cartLink() { return this.page.getByTestId('shopping-cart-link'); }
 
     getAddToCartButton(productName: string): Locator {
-        const id = productName.toLowerCase().replace(/ /g, '-');
-        return this.page.locator(`[data-test="add-to-cart-${id}"]`);
+        return this.page.getByTestId('inventory-item')
+            .filter({ hasText: productName })
+            .getByRole('button', { name: /add to cart/i });
     }
 
     async addItem(productName: string) {

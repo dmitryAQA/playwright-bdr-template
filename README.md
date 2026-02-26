@@ -9,12 +9,12 @@ This repository is the **Reference Implementation** of the [BDR Methodology](htt
 
 It demonstrates how to implement **Behavior-Driven Living Requirements** in code, generating beautiful reports without maintaining `.feature` files.
 
-## 🔗 Key Resources
+## Key Resources
 
-- **📘 [BDR Methodology Manifesto](https://github.com/dmitryAQA/bdr-methodology)**: The full theory, 4-layer architecture, anti-flakiness principles, and guides for other languages.
-- **🎬 [Live Allure Report](https://dmitryaqa.github.io/playwright-bdr-template/)**: See how the code below translates into "Living Documentation".
+- **BDR Methodology Manifesto**: The full theory, 4-layer architecture, anti-flakiness principles, and guides for other languages.
+- **Live Allure Report**: See how the code below translates into "Living Documentation".
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install dependencies
 ```bash
@@ -35,7 +35,7 @@ npx allure generate ./allure-results -o ./allure-report --clean
 npx allure open ./allure-report
 ```
 
-## 📂 Project Structure
+## Project Structure
 
 This template strictly follows the BDR responsibility layers:
 
@@ -46,7 +46,7 @@ This template strictly follows the BDR responsibility layers:
 | **`src/pom/`** | **Level 1 (Page)** | Page Objects. Selectors and raw Playwright interactions. |
 | **`src/bdr/`** | **Core** | Utilities for Reporting, Tables, and Decorators. **Do not modify.** |
 
-## 🤝 Contributing
+## Contributing
 
 This repository is for the **TypeScript** implementation.
 

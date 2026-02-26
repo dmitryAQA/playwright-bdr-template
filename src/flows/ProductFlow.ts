@@ -12,14 +12,13 @@ export class ProductFlow {
 
     @Step('GIVEN: I have a product catalog with {0} items')
     async logProducts(count: number) {
-        console.log(`Product catalog loaded with ${count} items:`);
-        this.products.forEach(p => console.log(` - ${p.name}: $${p.price}`));
+        await attachTable('Source Product Catalog', this.products);
     }
 
     @Step('WHEN: I filter products by category "{0}"')
     async filterByCategory(category: string) {
         const filtered = this.products.filter(p => p.category === category);
-        console.log(`Found ${filtered.length} products in ${category}`);
+        await attachTable(`Filtered Products: ${category}`, filtered);
         return filtered;
     }
 
@@ -28,8 +27,7 @@ export class ProductFlow {
         const sorted = [...this.products].sort((a, b) =>
             order === 'asc' ? a.price - b.price : b.price - a.price
         );
-        console.log(`Sorted products by price (${order}):`);
-        sorted.forEach(p => console.log(` - ${p.name}: $${p.price}`));
+        await attachTable(`Sorted Products (${order})`, sorted);
         return sorted;
     }
 

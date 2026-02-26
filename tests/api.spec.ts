@@ -11,11 +11,13 @@ test.describe('API BDR Demo', () => {
 
         api.login = async () => ({
             ok: () => true,
+            status: () => 200,
             json: async () => ({ success: true })
         } as any);
 
         api.getProfile = async () => ({
             ok: () => true,
+            status: () => 200,
             json: async () => ({ name: 'Dmitry Sorvachev' })
         } as any);
 

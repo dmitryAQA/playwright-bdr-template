@@ -90,7 +90,7 @@ export async function attachCompareTable(name: string, expected: any, actual: an
             Field: key,
             Expected: exp === undefined ? '<undefined>' : JSON.stringify(exp),
             Actual: act === undefined ? '<undefined>' : JSON.stringify(act),
-            Result: isMatch ? '✅ MATCH' : '❌ MISMATCH'
+            Result: isMatch ? '[PASS] MATCH' : '[FAIL] MISMATCH'
         };
     });
 

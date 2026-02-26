@@ -2,11 +2,11 @@ import { test as base } from '@playwright/test';
 import { LoginFlow } from '../flows/LoginFlow';
 import { InventoryFlow } from '../flows/InventoryFlow';
 import { CartFlow } from '../flows/CartFlow';
-import { UserFlow } from '../api/user.flow';
+import { UserFlow } from '../flows/UserFlow';
 import { LoginPage } from '../pom/LoginPage';
 import { InventoryPage } from '../pom/InventoryPage';
 import { CartPage } from '../pom/CartPage';
-import { UserApi } from '../api/user.api';
+import { UserApi } from '../api/UserApi';
 
 type BdrFixtures = {
     loginFlow: LoginFlow;

@@ -12,7 +12,7 @@ export class InventoryFlow {
 
     @Step('THEN: The cart badge should show "{0}"')
     async verifyCartBadge(count: string) {
-        await expect(this.inventoryPage.cartBadge).toHaveText(count);
+        await expect.soft(this.inventoryPage.cartBadge).toHaveText(count);
     }
 
     @Step('WHEN: User proceeds to cart')

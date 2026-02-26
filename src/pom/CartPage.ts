@@ -1,13 +1,10 @@
 import { Page, Locator } from '@playwright/test';
 
 export class CartPage {
-    readonly cartItems: Locator;
-    readonly checkoutButton: Locator;
+    constructor(private page: Page) { }
 
-    constructor(private page: Page) {
-        this.cartItems = page.locator('.cart_item');
-        this.checkoutButton = page.locator('[data-test="checkout"]');
-    }
+    get cartItems() { return this.page.getByTestId('inventory-item'); }
+    get checkoutButton() { return this.page.getByRole('button', { name: /checkout/i }); }
 
     async getCartItem(productName: string): Promise<Locator> {
         return this.cartItems.filter({ hasText: productName }).first();

@@ -12,11 +12,14 @@ export class LoginFlow {
 
     @Step('GIVEN: User is on the login page')
     async open() {
-        await this.loginPage.navigate();
+        await this.loginPage.open();
     }
 
     @Step('WHEN: User logs in with username "{0}" and password "{1}"')
-    async login(username: string, password: string = 'secret_sauce') {
+    async login(
+        username: string = process.env.STANDARD_USER ?? 'standard_user',
+        password: string = process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+    ) {
         await this.loginPage.fillUsername(username);
         await this.loginPage.fillPassword(password);
         await this.loginPage.clickLogin();
