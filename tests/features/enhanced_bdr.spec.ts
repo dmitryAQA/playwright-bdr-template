@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { BDR } from '../src/bdr/bdr';
-import { attachTable } from '../src/bdr/tables';
+import { BDR } from '../../src/bdr/bdr';
+import { attachTable } from '../../src/bdr/tables';
 
 test.describe('Enhanced BDR Features (Mocked)', () => {
 
@@ -67,6 +67,7 @@ test.describe('Enhanced BDR Features (Mocked)', () => {
                 await test.step('Sub-step 1: Verify permissions for ' + r, async () => {
                     console.log('Checking permissions...');
                 });
+
                 await test.step('Sub-step 2: Execute domain logic', async () => {
                     console.log('Executing logic...');
                 });

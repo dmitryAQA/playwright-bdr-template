@@ -23,5 +23,4 @@ blob-report/
 Thumbs.db
 .DS_Store
 
-# User-specified exclusion
-docs/articles/
+

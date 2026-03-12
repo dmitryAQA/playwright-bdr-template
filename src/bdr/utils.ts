@@ -14,13 +14,23 @@ export function formatTitle(template: string, args: any[]): string {
             return match;
         }
 
-        // 2. Index-based replacement: {0}, {1}
-        if (/^\d+$/.test(key)) {
-            const index = parseInt(key, 10);
-            if (index >= 0 && index < args.length) {
-                return String(args[index]);
+        // 2. Index-based or property-based replacement: {0}, {0.name}
+        const parts = key.split('.');
+        const index = parseInt(parts[0], 10);
+
+        if (!isNaN(index) && index >= 0 && index < args.length) {
+            let value = args[index];
+
+            // Navigate nested properties if provided (e.g., {0.user.name})
+            for (let i = 1; i < parts.length; i++) {
+                if (value && typeof value === 'object') {
+                    value = value[parts[i]];
+                } else {
+                    return match; // Fallback if property doesn't exist
+                }
             }
-            return match;
+
+            return value !== undefined ? String(value) : match;
         }
 
         // 3. Fallback

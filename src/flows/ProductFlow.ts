@@ -13,6 +13,7 @@ export class ProductFlow {
     @Step('GIVEN: I have a product catalog with {0} items')
     async logProducts(count: number) {
         await attachTable('Source Product Catalog', this.products);
+        this.products.forEach(p => console.log(` - ${p.name}: $${p.price}`));
     }
 
     @Step('WHEN: I filter products by category "{0}"')
@@ -28,6 +29,7 @@ export class ProductFlow {
             order === 'asc' ? a.price - b.price : b.price - a.price
         );
         await attachTable(`Sorted Products (${order})`, sorted);
+        sorted.forEach(p => console.log(` - ${p.name}: $${p.price}`));
         return sorted;
     }
 
@@ -35,13 +37,11 @@ export class ProductFlow {
     async verifyCatalogDisplayed() {
         // Attach product table to report for rich diagnostics
         await attachTable('Product Catalog', this.products);
-        console.log('Product catalog verified and attached to report');
     }
 
     @Step('THEN: The total price should be calculated')
     async calculateTotalPrice() {
         const total = this.products.reduce((sum, p) => sum + p.price, 0);
-        console.log(`Total price: $${total.toFixed(2)}`);
 
         // Attach summary table
         await attachTable('Price Summary', [

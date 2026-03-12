@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { BDR } from '../src/bdr/bdr';
+import { BDR } from '../../src/bdr/bdr';
 
 test.describe('Inline BDR Demo (Flexible)', () => {
 
     test('Successful Login (Inline BDD Style)', async ({ page }) => {
         // No Page Objects needed here - great for quick scripts or debugging
 
-        await BDR.Given('User is on the login page', async () => {
+        await BDR.Given('User is on the login page', { retryable: true }, async () => {
             await page.goto('/');
         });
 
@@ -16,7 +16,7 @@ test.describe('Inline BDR Demo (Flexible)', () => {
             await page.click('[data-test="login-button"]');
         });
 
-        await BDR.Then('Inventory page is visible', async () => {
+        await BDR.Then('Inventory page is visible', { retryable: true }, async () => {
             await expect(page.locator('.inventory_list')).toBeVisible();
         });
     });
@@ -24,7 +24,7 @@ test.describe('Inline BDR Demo (Flexible)', () => {
     test('Data Driven Test (Inline)', async ({ page }) => {
         const items = ['Sauce Labs Backpack', 'Sauce Labs Bike Light'];
 
-        await BDR.Given('User is logged in', async () => {
+        await BDR.Given('User is logged in', { retryable: true }, async () => {
             await page.goto('/');
             await page.fill('[data-test="username"]', 'standard_user');
             await page.fill('[data-test="password"]', 'secret_sauce');
@@ -38,7 +38,7 @@ test.describe('Inline BDR Demo (Flexible)', () => {
             });
         }
 
-        await BDR.Then('Cart badge shows "2"', async () => {
+        await BDR.Then('Cart badge shows "2"', { retryable: true }, async () => {
             await expect(page.locator('.shopping_cart_badge')).toHaveText('2');
         });
     });

@@ -1,4 +1,4 @@
-import { test } from '../src/fixtures';
+import { test } from '../../src/fixtures';
 
 test.describe('API BDR Demo', () => {
 

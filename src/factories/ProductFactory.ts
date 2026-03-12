@@ -1,25 +1,25 @@
 import { Product } from '../types/BusinessEntities';
 
+/**
+ * ProductFactory (Rule #4: Data-Driven Determinism)
+ */
 export class ProductFactory {
-    static createStandardProduct(): Product {
+    static createStandardProduct(overrides: Partial<Product> = {}, f: any): Product {
+        if (!f) throw new Error('Faker instance must be provided to Factory. Use the "faker" fixture in tests.');
         return {
-            name: 'Backpack',
-            description: 'A standard backpack',
-            price: 29.99,
-            category: 'clothing'
+            name: f.commerce.productName(),
+            description: f.commerce.productDescription(),
+            price: Number(f.commerce.price()),
+            category: 'clothing',
+            _cleanup: true,
+            ...overrides
         };
     }
 
     /**
      * BDR Collection Factory
-     * Returns an array of products for Data Slicing demo
      */
-    static createProducts(count: number = 3): Product[] {
-        return Array.from({ length: count }, (_, i) => ({
-            name: `Product ${i + 1}`,
-            description: `Description for product ${i + 1}`,
-            price: 10 + i * 5,
-            category: 'electronics'
-        }));
+    static createProducts(count: number = 3, f: any, overrides: Partial<Product> = {}): Product[] {
+        return Array.from({ length: count }, () => this.createStandardProduct(overrides, f));
     }
 }

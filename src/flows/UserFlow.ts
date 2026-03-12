@@ -5,10 +5,10 @@ import { Step } from '../bdr/decorators';
 export class UserFlow {
     constructor(private userApi: UserApi) { }
 
-    @Step('WHEN: User logs in via API as "{0}"')
-    async login(username: string) {
-        const response = await this.userApi.login(username);
-        expect(response.ok(), 'API login should be successful').toBe(true);
+    @Step('WHEN: User logs in via API as "{0.username}"')
+    async login(user: any) {
+        const response = await this.userApi.login(user.username);
+        expect(response.ok(), `API Login should be successful for user: ${user.username}`).toBe(true);
     }
 
     @Step('THEN: User profile should be accessible via API')

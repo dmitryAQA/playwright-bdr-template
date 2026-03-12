@@ -1,16 +1,25 @@
 {
   "devDependencies": {
+    "@faker-js/faker": "^10.3.0",
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.2.2",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
     "allure-commandline": "^2.36.0",
     "allure-playwright": "^3.4.5",
     "dotenv": "^17.3.1",
+    "eslint": "^10.0.1",
+    "eslint-plugin-playwright": "^2.7.0",
     "playwright": "^1.58.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "scripts": {
     "test": "playwright test",
-    "report": "allure serve allure-results"
+    "test:internal": "playwright test tests/internal",
+    "lint": "eslint \"{src,tests}/**/*.ts\"",
+    "allure:setup-categories": "node src/axiom/scripts/setup-allure-categories.js",
+    "bdr:merge": "ts-node src/axiom/scripts/merge-bdr-history.ts",
+    "report": "npm run bdr:merge && npm run allure:setup-categories && allure serve allure-results"
   }
 }

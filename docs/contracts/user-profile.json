@@ -1,0 +1,48 @@
+{
+    "consumer": {
+        "name": "BDR-Playwright-Template"
+    },
+    "provider": {
+        "name": "User-Service"
+    },
+    "interactions": [
+        {
+            "description": "a request for user profile",
+            "request": {
+                "method": "GET",
+                "path": "/api/profile",
+                "headers": {
+                    "Authorization": "Bearer *"
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "username": "standard_user",
+                    "role": "user",
+                    "email": "standard@test.com"
+                },
+                "matchingRules": {
+                    "$.body.username": {
+                        "match": "type"
+                    },
+                    "$.body.role": {
+                        "match": "regex",
+                        "regex": "admin|user|guest"
+                    },
+                    "$.body.email": {
+                        "match": "email"
+                    }
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "pactSpecification": {
+            "version": "2.0.0"
+        }
+    }
+}

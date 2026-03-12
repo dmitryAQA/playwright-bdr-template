@@ -33,6 +33,10 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
+    - name: Run ESLint (Soft Warnings)
+      run: npm run lint
+      continue-on-error: true
+
     - name: Run Playwright tests
       run: |
         mkdir -p allure-results

@@ -3,24 +3,18 @@ import { Page, Locator } from '@playwright/test';
 export class LoginPage {
     constructor(private page: Page) { }
 
-    get usernameInput() { return this.page.getByPlaceholder(/username/i); }
-    get passwordInput() { return this.page.getByPlaceholder(/password/i); }
-    get loginButton() { return this.page.getByRole('button', { name: /login/i }); }
-    get errorMessage() { return this.page.locator('[data-test="error"]'); }
+    get usernameInput() { return this.page.getByTestId('username'); }
+    get passwordInput() { return this.page.getByTestId('password'); }
+    get loginButton() { return this.page.getByTestId('login-button'); }
+    get errorMessage() { return this.page.getByTestId('error'); }
 
     async open() {
         await this.page.goto('/');
     }
 
-    async fillUsername(username: string) {
+    async login(username: string, password: string) {
         await this.usernameInput.fill(username);
-    }
-
-    async fillPassword(password: string) {
         await this.passwordInput.fill(password);
-    }
-
-    async clickLogin() {
         await this.loginButton.click();
     }
 }

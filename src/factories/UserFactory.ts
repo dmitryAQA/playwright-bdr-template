@@ -1,40 +1,38 @@
 import { User } from '../types/BusinessEntities';
 
 /**
- * UserFactory
- * Factory for creating test user data
+ * UserFactory (Rule #4: Data-Driven Determinism)
+ * 
+ * Factory for creating test user data. Use overrides for fields 
+ * that are critical to the test logic, and let Faker handle the rest.
  */
 export class UserFactory {
     /**
-     * Creates a standard user with default values
+     * Creates a standard user with deterministic random values
      */
-    static createStandardUser(): User {
+    static createStandardUser(overrides: Partial<User> = {}, f: any): User {
+        if (!f) throw new Error('Faker instance must be provided to Factory. Use the "faker" fixture in tests.');
         return {
-            username: 'standard_user',
+            username: f.internet.username(),
             role: 'user',
-            email: 'standard@test.com'
+            email: f.internet.email(),
+            // Rule #8: Data Cleanup Tag
+            _cleanup: true,
+            ...overrides
         };
     }
 
     /**
-     * Creates an admin user with elevated privileges
+     * Creates an admin user
      */
-    static createAdminUser(): User {
+    static createAdminUser(overrides: Partial<User> = {}, f: any): User {
+        if (!f) throw new Error('Faker instance must be provided to Factory. Use the "faker" fixture in tests.');
         return {
-            username: 'admin_user',
+            username: f.internet.username(),
             role: 'admin',
-            email: 'admin@test.com'
-        };
-    }
-
-    /**
-     * Creates a guest user with limited access
-     */
-    static createGuestUser(): User {
-        return {
-            username: 'guest_user',
-            role: 'guest',
-            email: 'guest@test.com'
+            email: f.internet.email(),
+            _cleanup: true,
+            ...overrides
         };
     }
 
@@ -42,19 +40,7 @@ export class UserFactory {
      * BDR Collection Factory
      * Returns an array of users for Data-Driven testing
      */
-    static createUsers(count: number = 3): User[] {
-        const roles: ('admin' | 'user' | 'guest')[] = ['admin', 'user', 'guest'];
-        return Array.from({ length: count }, (_, i) => ({
-            username: `test_user_${i + 1}`,
-            role: roles[i % roles.length],
-            email: `user${i + 1}@test.com`
-        }));
-    }
-
-    /**
-     * Creates a custom user with specific properties
-     */
-    static createCustomUser(username: string, role: 'admin' | 'user' | 'guest', email: string): User {
-        return { username, role, email };
+    static createUsers(count: number = 3, f: any, overrides: Partial<User> = {}): User[] {
+        return Array.from({ length: count }, () => this.createStandardUser(overrides, f));
     }
 }
