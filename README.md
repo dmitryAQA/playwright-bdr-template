@@ -165,5 +165,5 @@ I am currently open to **Contract / Consulting** roles to help teams implement s
 
 This repository is for the **TypeScript** implementation.
 
-If you are looking for **Python**, **Java**, or **C#** examples, please check the [Community Implementations](https://github.com/dmitryAQA/bdr-methodology#community-implementations) section in the main methodology repository. 
+If you are looking for **Python**, **Java**, or **C#** examples, please check the [Community Implementations](https://github.com/dmitryAQA/bdr-methodology#community-implementations) section in the main methodology repository.
 
