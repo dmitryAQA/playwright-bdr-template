@@ -1,46 +1,51 @@
-import { User } from '../types/BusinessEntities';
+import { User, UserRole } from '../types/BusinessEntities';
+import { SYSTEM_USERS, SystemUserKey } from '../data/SystemUsers';
+import { TestConfig } from '../config/TestConfig';
 
 /**
  * UserFactory (Rule #4: Data-Driven Determinism)
- * 
- * Factory for creating test user data. Use overrides for fields 
- * that are critical to the test logic, and let Faker handle the rest.
+ *
+ * Factory for creating test user data. Consistent with BDR Manifesto.
  */
 export class UserFactory {
     /**
-     * Creates a standard user with deterministic random values
+     * Core helper for building user objects
      */
-    static createStandardUser(overrides: Partial<User> = {}, f: any): User {
-        if (!f) throw new Error('Faker instance must be provided to Factory. Use the "faker" fixture in tests.');
+    private static assemble(role: UserRole, f: any, overrides: Partial<User> = {}): User {
+        if (!f) throw new Error('Faker instance must be provided. Use the "faker" fixture.');
         return {
             username: f.internet.username(),
-            role: 'user',
+            password: TestConfig.password,
+            role: role,
             email: f.internet.email(),
-            // Rule #8: Data Cleanup Tag
             _cleanup: true,
-            ...overrides
+            ...overrides,
         };
     }
 
     /**
-     * Creates an admin user
+     * Entry point for standard user creation
      */
-    static createAdminUser(overrides: Partial<User> = {}, f: any): User {
-        if (!f) throw new Error('Faker instance must be provided to Factory. Use the "faker" fixture in tests.');
+    static create(options: { role?: UserRole } = {}, f: any): User {
+        const role = options.role || UserRole.User;
+        return this.assemble(role, f, options);
+    }
+
+    /**
+     * Predefined System Users (Saucedemo specific)
+     */
+    static createFromSystem(key: SystemUserKey, overrides: Partial<User> = {}): User {
         return {
-            username: f.internet.username(),
-            role: 'admin',
-            email: f.internet.email(),
+            ...SYSTEM_USERS[key],
             _cleanup: true,
-            ...overrides
+            ...overrides,
         };
     }
 
     /**
-     * BDR Collection Factory
-     * Returns an array of users for Data-Driven testing
+     * Collection Factory for Data-Driven testing
      */
-    static createUsers(count: number = 3, f: any, overrides: Partial<User> = {}): User[] {
-        return Array.from({ length: count }, () => this.createStandardUser(overrides, f));
+    static createMany(count: number = 3, f: any, overrides: Partial<User> = {}): User[] {
+        return Array.from({ length: count }, () => this.create({ role: UserRole.User }, f));
     }
 }

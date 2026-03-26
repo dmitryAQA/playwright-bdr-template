@@ -1,31 +1,49 @@
 import { test } from '../../src/fixtures';
-import { User, Product } from '../../src/types/BusinessEntities';
+import { BDR } from '../../src/bdr/bdr';
+import { attachTable } from '../../src/bdr/tables';
+import { UserFactory } from '../../src/factories/UserFactory';
+import { ProductFactory } from '../../src/factories/ProductFactory';
 
-test.describe('Class-Based BDR Demo (Recommended)', () => {
+test.describe('Class-Based BDR Demo (Recommended / Golden Standard)', () => {
+    test('E2E Purchase Flow: Login -> Add to Cart -> Checkout', async ({ authFlow, inventoryFlow, cartFlow }) => {
+        // Data-Driven Determinism (Rule #4)
+        const testUser = UserFactory.createFromSystem('STANDARD');
+        const testProduct = ProductFactory.createFromCatalog('BACKPACK');
 
-    test('E2E Purchase Flow: Login -> Add to Cart -> Checkout', async ({ loginFlow, inventoryFlow, cartFlow }) => {
-        const testUser: User = { username: 'standard_user', role: 'user', email: 'test@test.com' };
-        const testProduct: Product = { name: 'Sauce Labs Backpack', price: 29.99, description: 'Cool backpack', category: 'clothing' };
+        await BDR.Given('User is logged in as standard_user', async () => {
+            // Rich Diagnostics: show who we are logging in as
+            await attachTable('Pre-test Verification', [testUser, testProduct]);
 
-        // 1. Arrange (Given)
-        await loginFlow.open();
-        await loginFlow.login(testUser);
-        await loginFlow.verifyInventoryVisible();
+            await authFlow.open();
+            await authFlow.loginAs(testUser);
+            await authFlow.verifyInventoryVisible();
+        });
 
-        // 2. Act (When)
-        await inventoryFlow.addItemToCart(testProduct);
-        await inventoryFlow.verifyCartBadge('1');
-        await inventoryFlow.goToCart();
+        await BDR.When('User adds {} to cart', testProduct.name, async () => {
+            await inventoryFlow.addItemToCart(testProduct);
+            await inventoryFlow.verifyCartBadge('1');
+            await inventoryFlow.goToCart();
+        });
 
-        // 3. Assert (Then)
-        await cartFlow.verifyItemInCart(testProduct);
-        await cartFlow.clickCheckout();
+        await BDR.Then('The {} should be available for checkout in the cart', testProduct.name, async () => {
+            await cartFlow.verifyItemInCart(testProduct);
+            await cartFlow.clickCheckout();
+        });
     });
 
-    test('Failed login via BDR Flow', async ({ loginFlow }) => {
-        const lockedUser: User = { username: 'locked_out_user', role: 'user', email: 'locked@test.com' };
-        await loginFlow.open();
-        await loginFlow.login(lockedUser);
-        await loginFlow.verifyErrorMessage('Sorry, this user has been locked out.');
+    test('Failed login via BDR Flow', async ({ authFlow }) => {
+        const lockedUser = UserFactory.createFromSystem('LOCKED_OUT');
+
+        await BDR.Given('User is on the login page', async () => {
+            await authFlow.open();
+        });
+
+        await BDR.When('User attempts to login as {}', lockedUser.username, async () => {
+            await authFlow.loginAs(lockedUser);
+        });
+
+        await BDR.Then('A locked-out message should be visible', async () => {
+            await authFlow.verifyErrorMessage('Sorry, this user has been locked out.');
+        });
     });
 });

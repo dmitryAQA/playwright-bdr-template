@@ -9,15 +9,21 @@
     "allure-playwright": "^3.4.5",
     "dotenv": "^17.3.1",
     "eslint": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-playwright": "^2.7.0",
+    "eslint-plugin-prettier": "^5.5.5",
     "playwright": "^1.58.2",
+    "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "scripts": {
     "test": "playwright test",
     "test:internal": "playwright test tests/internal",
+    "tests": "npm run test && npm run report",
     "lint": "eslint \"{src,tests}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,tests}/**/*.ts\" --fix",
+    "format": "prettier --write \"{src,tests}/**/*.ts\"",
     "allure:setup-categories": "node src/axiom/scripts/setup-allure-categories.js",
     "bdr:merge": "ts-node src/axiom/scripts/merge-bdr-history.ts",
     "report": "npm run bdr:merge && npm run allure:setup-categories && allure serve allure-results"

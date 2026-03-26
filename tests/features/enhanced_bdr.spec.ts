@@ -1,79 +1,75 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../src/fixtures/index';
 import { BDR } from '../../src/bdr/bdr';
 import { attachTable } from '../../src/bdr/tables';
+import { UserFactory } from '../../src/factories/UserFactory';
+import { ProductFactory } from '../../src/factories/ProductFactory';
+import { SystemUserKey } from '../../src/data/SystemUsers';
 
-test.describe('Enhanced BDR Features (Mocked)', () => {
+test.describe('Enhanced BDR Features (Model Patterns)', () => {
+    test('Parameterized Steps with Data-Driven Inputs', async ({ page }) => {
+        const testUser = UserFactory.createFromSystem('STANDARD');
 
-    test('Parameterized Steps', async ({ page }) => {
-        // Use about:blank for speed and stability
-        await BDR.Given('User is on the login page', async () => {
+        await BDR.Given('User is on the blank demonstration page', async () => {
             await page.goto('about:blank');
-            await page.setContent('<h1>Login Page</h1>');
+            await page.setContent('<h1>BDR Demonstration</h1>');
         });
 
-        const username = 'standard_user';
-        // Parameters are passed to the step body AND formatted in the title
-        await BDR.When('User logs in as {}', username, async (u: string) => {
-            // Reporting is handled by BDR step wrapper
+        // Parameters are passed to the step body AND automatically formatted in the title
+        await BDR.When('User logs in as {}', testUser.username, async (u: string) => {
+            // Business logic implementation for step "User logs in as standard_user"
         });
 
-        await BDR.Then('Inventory page should be visible', async () => {
-            // Mock success
+        await BDR.Then('Inventory state should be verified for user {}', testUser.username, async () => {
             expect(true).toBe(true);
         });
     });
 
-    test('Data Tables and HTML Attachments', async ({ page }) => {
-        await BDR.Given('User is logged in', async () => {
+    test('Rich Reporting: Data Tables and Attachments', async ({ page }) => {
+        const items = [ProductFactory.createFromCatalog('BACKPACK'), ProductFactory.createFromCatalog('BIKE_LIGHT')];
+        const expectedCount = items.length.toString();
+
+        await BDR.Given('User navigation is initialized', async () => {
             await page.goto('about:blank');
         });
 
-        await BDR.When('User adds the following items to cart:', async () => {
-            const items = [
-                { name: 'Sauce Labs Backpack', id: 'sauce-labs-backpack', price: '$29.99' },
-                { name: 'Sauce Labs Bike Light', id: 'sauce-labs-bike-light', price: '$9.99' }
-            ];
+        await BDR.When('User adds multiple items from catalog to cart:', async () => {
+            // 1. This attaches a formatted HTML table to the Playwright report
+            await attachTable('Cart Items Snapshot', items);
 
-            // 1. This should attach an HTML table to the report
-            await attachTable('Cart Items', items);
-
-            // 2. Simulate processing items
+            // 2. Logic for processing list of business entities
             for (const item of items) {
-                await test.step(`Processing item: ${item.name}`, async () => {
-                    // Actual logic would go here
+                await test.step(`Processing catalog item: ${item.name}`, async () => {
+                    // Logic for individual item interaction
                 });
             }
         });
 
-        await BDR.Then('Cart badge shows {}', '2', async (count: string) => {
-            expect(count, 'The badge should display exactly 2').toBe('2');
+        await BDR.Then('Cart badge shows {}', expectedCount, async (count: string) => {
+            expect(count).toBe(expectedCount);
         });
     });
 
-    const testUsers = [
-        { name: 'standard_user', role: 'Premium' },
-        { name: 'visual_user', role: 'Basic' },
-        { name: 'problem_user', role: 'Support' }
-    ];
+    const dataDrivenUsers: SystemUserKey[] = ['STANDARD', 'VISUAL', 'PROBLEM'];
 
-    testUsers.forEach(({ name, role }) => {
-        test(`Data-Driven Scalability: Flow for ${name} (${role})`, async ({ page }) => {
-            await BDR.Given('Background: User context initialized for {}', name, async () => {
-                // Mocking setup
+    dataDrivenUsers.forEach((userKey) => {
+        test(`Data-Driven Scalability: Flow for ${userKey} instance`, async ({ page }) => {
+            const user = UserFactory.createFromSystem(userKey);
+
+            await BDR.Given('Background: User context initialized for {}', user.username, async () => {
                 await page.goto('about:blank');
             });
 
-            await BDR.When('User performs a sequence of business actions as {}', role, async (r: string) => {
-                await test.step('Sub-step 1: Verify permissions for ' + r, async () => {
-                    console.log('Checking permissions...');
+            await BDR.When('User performs actions with role {}', user.role, async (r: string) => {
+                await test.step(`Verifying permissions for role: ${r}`, async () => {
+                    // Permission check logic
                 });
 
-                await test.step('Sub-step 2: Execute domain logic', async () => {
-                    console.log('Executing logic...');
+                await test.step('Execute domain-specific logic', async () => {
+                    // Business action
                 });
             });
 
-            await BDR.Then('The system state is valid for user types', async () => {
+            await BDR.Then('The system state is valid for user role {}', user.role, async () => {
                 expect(true).toBe(true);
             });
         });

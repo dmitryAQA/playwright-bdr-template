@@ -11,22 +11,26 @@ export async function attachTable(name: string, data: any[]) {
     const html = generateHtmlTable(data);
     await test.info().attach(name, {
         body: Buffer.from(html),
-        contentType: 'text/html'
+        contentType: 'text/html',
     });
 }
 
 function generateHtmlTable(data: any[]): string {
     const headers = Object.keys(data[0]);
 
-    const ths = headers.map(h => `<th>${h}</th>`).join('');
+    const ths = headers.map((h) => `<th>${h}</th>`).join('');
 
-    const trs = data.map(row => {
-        const tds = headers.map(h => {
-            const val = row[h];
-            return `<td>${val === undefined || val === null ? '' : val}</td>`;
-        }).join('');
-        return `<tr>${tds}</tr>`;
-    }).join('');
+    const trs = data
+        .map((row) => {
+            const tds = headers
+                .map((h) => {
+                    const val = row[h];
+                    return `<td>${val === undefined || val === null ? '' : val}</td>`;
+                })
+                .join('');
+            return `<tr>${tds}</tr>`;
+        })
+        .join('');
 
     return `
     <html>
@@ -81,7 +85,7 @@ function generateHtmlTable(data: any[]): string {
 export async function attachCompareTable(name: string, expected: any, actual: any) {
     const allKeys = Array.from(new Set([...Object.keys(expected), ...Object.keys(actual)]));
 
-    const comparisonData = allKeys.map(key => {
+    const comparisonData = allKeys.map((key) => {
         const exp = expected[key];
         const act = actual[key];
         const isMatch = JSON.stringify(exp) === JSON.stringify(act);
@@ -90,7 +94,7 @@ export async function attachCompareTable(name: string, expected: any, actual: an
             Field: key,
             Expected: exp === undefined ? '<undefined>' : JSON.stringify(exp),
             Actual: act === undefined ? '<undefined>' : JSON.stringify(act),
-            Result: isMatch ? '[PASS] MATCH' : '[FAIL] MISMATCH'
+            Result: isMatch ? '[PASS] MATCH' : '[FAIL] MISMATCH',
         };
     });
 

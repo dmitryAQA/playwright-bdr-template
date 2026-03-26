@@ -9,13 +9,12 @@ export interface BDRPlugin {
     /** Unique name of the plugin */
     name: string;
 
-    /** 
+    /**
      * Hook to wrap step execution with custom logic (e.g. retries).
      * The plugin must call `stepFn()` when ready to execute the step.
      */
     executeStep?: <T>(stepName: string, stepFn: () => Promise<T>) => Promise<T>;
 }
-
 
 // ============================================
 

@@ -2,19 +2,23 @@ import { test as base, APIRequestContext, expect } from '@playwright/test';
 // eslint-disable-next-line no-restricted-imports
 import { faker } from '@faker-js/faker';
 import { attachInfraDetector } from '../bdr/bdr';
-import { LoginFlow } from '../flows/LoginFlow';
+import { AuthFlow } from '../flows/AuthFlow';
 import { InventoryFlow } from '../flows/InventoryFlow';
 import { CartFlow } from '../flows/CartFlow';
 import { UserFlow } from '../flows/UserFlow';
 import { LoginPage } from '../pom/LoginPage';
 import { InventoryPage } from '../pom/InventoryPage';
 import { CartPage } from '../pom/CartPage';
-import { UserApi } from '../api/UserApi';
-import { generateIdempotencyKey } from '../api/Idempotency';
+import { UserApiClient } from '../api/clients/UserApiClient';
+import { generateIdempotencyKey } from '../api/infrastructure/Idempotency';
+import { createIdempotentApi } from '../api/infrastructure/ApiWrapper';
+import { TestConfig } from '../config/TestConfig';
+import { hashCode } from '../utils/CryptoUtils';
+import { setupSeededFaker } from '../utils/FakerUtils';
 
 /**
  * Lead Architecture: Level 3 Fixtures
- * 
+ *
  * We use Dependency Injection (DI) to compose Flows from individual Page Object fixtures.
  * This allows Playwright to manage the lifecycle of each component and cache instances.
  */
@@ -23,10 +27,10 @@ type BdrFixtures = {
     loginPage: LoginPage;
     inventoryPage: InventoryPage;
     cartPage: CartPage;
-    userApi: UserApi;
+    userApi: UserApiClient;
 
     // Business Flows (Level 2)
-    loginFlow: LoginFlow;
+    authFlow: AuthFlow;
     inventoryFlow: InventoryFlow;
     cartFlow: CartFlow;
     userFlow: UserFlow;
@@ -42,42 +46,24 @@ type BdrFixtures = {
     api: any;
 };
 
-/**
- * Hash function for deterministic seeding
- */
-function hashCode(str: string): number {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-}
-
 export const test = base.extend<BdrFixtures>({
     /**
      * RUN_ID: Unique identifier for the current CI run or local execution.
      * Used for data isolation (Rule #1).
      */
-    runId: [async ({ }, use) => {
-        const id = process.env.CI_RUN_ID || process.env.GITHUB_RUN_ID || Date.now().toString().slice(-6);
-        await use(id);
-    }, { scope: 'test' }],
+    runId: [
+        async ({}, use) => {
+            await use(TestConfig.runId);
+        },
+        { scope: 'test' },
+    ],
 
     /**
      * Seeded Faker: Provides deterministic but unique data for each test.
      * Rule: Unique between runs, stable between retries.
      */
     faker: async ({ runId }, use, testInfo) => {
-        // Compose a unique seed from runId and the test's unique ID
-        const seedValue = hashCode(`${runId}-${testInfo.testId}`);
-        faker.seed(seedValue);
-
-        // Expose seed in annotations for reproduction (Lead Standard)
-        testInfo.annotations.push({ type: 'faker-seed', description: String(seedValue) });
-
-        await use(faker);
+        await use(await setupSeededFaker(runId, testInfo));
     },
 
     // Auto-attach infra detector to each page
@@ -97,44 +83,25 @@ export const test = base.extend<BdrFixtures>({
         await use(new CartPage(page));
     },
     userApi: async ({ api }, use) => {
-        await use(new UserApi(api));
+        await use(new UserApiClient(api));
     },
 
     /**
      * API Context with Idempotency Support
      */
     api: async ({ request, runId }: { request: APIRequestContext; runId: string }, use: (r: any) => Promise<void>) => {
-        const wrapMethod = (method: 'post' | 'put') => {
-            return (url: string, options: any = {}) => {
-                const key = generateIdempotencyKey(method, url, options.data);
-                return request[method](url, {
-                    ...options,
-                    headers: {
-                        ...options.headers,
-                        'X-Idempotency-Key': `test-${runId}-${key}`,
-                    }
-                });
-            };
-        };
-
-        const apiWrapper = {
-            ...request,
-            post: wrapMethod('post'),
-            put: wrapMethod('put'),
-        };
-
-        await use(apiWrapper);
+        await use(createIdempotentApi(request, runId));
     },
 
     // --- Business Flows (DI via fixtures) ---
-    loginFlow: async ({ loginPage, inventoryPage }, use) => {
-        await use(new LoginFlow(loginPage, inventoryPage));
+    authFlow: async ({ loginPage, inventoryPage }, use) => {
+        await use(new AuthFlow(loginPage, inventoryPage));
     },
     inventoryFlow: async ({ inventoryPage }, use) => {
         await use(new InventoryFlow(inventoryPage));
     },
-    cartFlow: async ({ cartPage }, use) => {
-        await use(new CartFlow(cartPage));
+    cartFlow: async ({ cartPage, page }, use) => {
+        await use(new CartFlow(cartPage, page));
     },
     userFlow: async ({ userApi }, use) => {
         await use(new UserFlow(userApi));

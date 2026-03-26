@@ -1,10 +1,10 @@
 /**
  * @Step Decorator with Retry
- * 
+ *
  * Universal @Step Decorator that wraps methods with:
  * 1. Playwright test.step for reporting
  * 2. Automatic retry for flaky errors (INFRA, DOM)
- * 
+ *
  * Supports both:
  * 1. Legacy Decorators (experimentalDecorators: true) -> (target, prop, descriptor)
  * 2. Standard Decorators (Stage 3) -> (value, context)
@@ -21,16 +21,16 @@ export interface StepOptions {
 
 /**
  * @Step Decorator
- * 
+ *
  * Wraps a method with test.step and retry logic.
- * 
+ *
  * @param title - Step title with optional placeholders {0}, {1}, {}
  * @param options - Optional step execution settings (retryable, stepId)
- * 
+ *
  * @example
  * ```typescript
  * class LoginPage {
- *   @Step('Login as {0}', { retryable: true })
+ *   @Step('Login as {0}')
  *   async login(user: User) {
  *     // ... login logic
  *   }

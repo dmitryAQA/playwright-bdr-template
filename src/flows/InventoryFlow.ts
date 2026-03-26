@@ -4,11 +4,11 @@ import { Product } from '../types/BusinessEntities';
 import { InventoryPage } from '../pom/InventoryPage';
 
 export class InventoryFlow {
-    constructor(private inventoryPage: InventoryPage) { }
+    constructor(private inventoryPage: InventoryPage) {}
 
     @Step('WHEN: User adds product "{0.name}" to the cart')
     async addItemToCart(product: Product) {
-        await this.inventoryPage.addItem(product.name);
+        await this.inventoryPage.addItem(product.id);
     }
 
     @Step('THEN: The cart badge should show "{0}"')

@@ -4,25 +4,22 @@ import { User } from '../types/BusinessEntities';
 import { LoginPage } from '../pom/LoginPage';
 import { InventoryPage } from '../pom/InventoryPage';
 
-export class LoginFlow {
+export class AuthFlow {
     // DI: Inject POMs
     constructor(
         private loginPage: LoginPage,
-        private inventoryPage: InventoryPage // Need this to verify successful login
-    ) { }
+        private inventoryPage: InventoryPage, // Need this to verify successful login
+    ) {}
 
-    @Step('GIVEN: User is on the login page', { retryable: true })
+    @Step('GIVEN: User is on the login page')
     async open(options: StepOptions = {}) {
         await this.loginPage.open();
     }
 
     @Step('WHEN: User logs in with user "{0.username}"')
-    async login(user: User, options: StepOptions = {}) {
-        await this.loginPage.usernameInput.fill(user.username);
-        // Assuming user.password exists, but User entity currently only has email/role/username.
-        // For demo purposes, we'll hardcode or assume a generic password if not present.
-        await this.loginPage.passwordInput.fill('secret_sauce');
-        await this.loginPage.loginButton.click();
+    async loginAs(user: User, options: StepOptions = {}) {
+        const password = user.password || 'secret_sauce';
+        await this.loginPage.login(user.username, password);
     }
 
     @Step('THEN: The inventory page should be visible')

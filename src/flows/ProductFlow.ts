@@ -8,28 +8,26 @@ import { attachTable } from '../bdr/tables';
  * and data-driven testing with collections
  */
 export class ProductFlow {
-    constructor(private products: Product[]) { }
+    constructor(private products: Product[]) {}
 
     @Step('GIVEN: I have a product catalog with {0} items')
     async logProducts(count: number) {
         await attachTable('Source Product Catalog', this.products);
-        this.products.forEach(p => console.log(` - ${p.name}: $${p.price}`));
+        this.products.forEach((p) => console.log(` - ${p.name}: $${p.price}`));
     }
 
     @Step('WHEN: I filter products by category "{0}"')
     async filterByCategory(category: string) {
-        const filtered = this.products.filter(p => p.category === category);
+        const filtered = this.products.filter((p) => p.category === category);
         await attachTable(`Filtered Products: ${category}`, filtered);
         return filtered;
     }
 
     @Step('WHEN: I sort products by price {0}')
     async sortByPrice(order: 'asc' | 'desc') {
-        const sorted = [...this.products].sort((a, b) =>
-            order === 'asc' ? a.price - b.price : b.price - a.price
-        );
+        const sorted = [...this.products].sort((a, b) => (order === 'asc' ? a.price - b.price : b.price - a.price));
         await attachTable(`Sorted Products (${order})`, sorted);
-        sorted.forEach(p => console.log(` - ${p.name}: $${p.price}`));
+        sorted.forEach((p) => console.log(` - ${p.name}: $${p.price}`));
         return sorted;
     }
 
@@ -45,7 +43,7 @@ export class ProductFlow {
 
         // Attach summary table
         await attachTable('Price Summary', [
-            { 'Total Items': this.products.length, 'Total Price': `$${total.toFixed(2)}` }
+            { 'Total Items': this.products.length, 'Total Price': `$${total.toFixed(2)}` },
         ]);
 
         return total;

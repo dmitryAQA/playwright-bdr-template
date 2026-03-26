@@ -1,27 +1,42 @@
 import { test } from '../../src/fixtures';
+import { BDR } from '../../src/bdr/bdr';
+import { attachTable } from '../../src/bdr/tables';
+import { UserFactory } from '../../src/factories/UserFactory';
+import { ProfileFactory } from '../../src/factories/ProfileFactory';
 
 test.describe('API BDR Demo', () => {
-
     test('User Authentication and Profile Check via API', async ({ userFlow }) => {
-        // Mocking the API service layer for the demo
-        // This ensures the test passes without a real backend while showing BDR reporting
+        const testUser = UserFactory.createFromSystem('DMITRY');
+        const testProfile = ProfileFactory.createFromProfiles('DMITRY');
 
-        // @ts-ignore - accessing internal for demo mocking
-        const api = userFlow.userApi;
+        await BDR.Given('Background: API service mocks configured for user auth', async () => {
+            // @ts-ignore - access internal for mocking demonstration
+            const api = userFlow.userApi;
 
-        api.login = async () => ({
-            ok: () => true,
-            status: () => 200,
-            json: async () => ({ success: true })
-        } as any);
+            // Mocking the API layer using our data-driven factories
+            api.login = async () =>
+                ({
+                    ok: () => true,
+                    status: () => 200,
+                    json: async () => ({ success: true }),
+                }) as any;
 
-        api.getProfile = async () => ({
-            ok: () => true,
-            status: () => 200,
-            json: async () => ({ name: 'Dmitry Sorvachev' })
-        } as any);
+            api.getProfile = async () =>
+                ({
+                    ok: () => true,
+                    status: () => 200,
+                    json: async () => testProfile,
+                }) as any;
 
-        await userFlow.login('dmitry_sorvachev');
-        await userFlow.verifyProfileIsAccessible();
+            await attachTable('Configured Mock Profile', [testProfile]);
+        });
+
+        await BDR.When('User logs in as {} via API', testUser.username, async () => {
+            await userFlow.login(testUser);
+        });
+
+        await BDR.Then('User profile should be accessible and valid', async () => {
+            await userFlow.verifyProfileIsAccessible();
+        });
     });
 });

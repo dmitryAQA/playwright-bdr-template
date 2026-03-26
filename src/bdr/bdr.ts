@@ -26,7 +26,7 @@ const attachedPages = new WeakSet<Page>();
  */
 function attachInfraDetector(page: Page, options?: any): void {
     if (attachedPages.has(page)) {
-        return;  // Already attached
+        return; // Already attached
     }
 
     const axiom = getAxiom();
@@ -49,8 +49,7 @@ const createStep = (prefix: string) => {
 
         if (typeof body !== 'function') {
             throw new Error(
-                `BDR.${prefix}: Last argument must be a function (step body). ` +
-                `Received: ${typeof body}`
+                `BDR.${prefix}: Last argument must be a function (step body). ` + `Received: ${typeof body}`,
             );
         }
 

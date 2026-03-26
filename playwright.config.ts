@@ -53,14 +53,22 @@ export default defineConfig({
 
     /* Configure projects for major browsers */
     projects: [
+        // 1. Auth Setup: Get storage state for users
         {
-            name: 'setup',
-            testMatch: /.*\.setup\.ts/,
+            name: 'auth-setup',
+            testMatch: /.*\.auth\.setup\.ts/,
         },
+        // 2. Health Setup: Verify environment availability (depends on auth)
+        {
+            name: 'healthcheck',
+            testMatch: /.*\.health\.setup\.ts/,
+            dependencies: ['auth-setup'],
+        },
+        // 3. Main Browser Project: Full E2E suite
         {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
-            dependencies: ['setup'],
+            dependencies: ['healthcheck'],
         },
     ],
 });

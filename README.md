@@ -24,13 +24,19 @@ npx playwright install
 
 ### 2. Run demonstration
 ```bash
-# Run all BDR demo tests
-npx playwright test tests/demonstration/scaling_demo.spec.ts
+# Run the unified BDR cycle (Test + Report)
+npm run tests
+
+# Or run individual demo tests
+npx playwright test tests/demonstration/demo.spec.ts
 ```
 
 ### 3. View Report
 ```bash
-# Generate and open Allure report with BDR categories and history
+# Use the unified command for a complete cycle
+npm run tests
+
+# Or manually generate and open the report
 npm run report
 ```
 

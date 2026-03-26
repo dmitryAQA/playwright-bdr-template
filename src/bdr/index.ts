@@ -106,7 +106,7 @@ async function loadConfigFile(): Promise<void> {
 }
 
 // Auto-load config on module import (non-blocking)
-loadConfigFile().catch(() => { });
+loadConfigFile().catch(() => {});
 
 // ============================================
 // Public API Functions
@@ -140,14 +140,14 @@ export function getBaseURL(): string {
  *
  * @param config - Configuration object
  *
-  * @example
-  * ```typescript
-  * import { Axiom } from 'bdr';
-  * 
-  * configureBDR({
-  *   axiom: new Axiom({ retries: 5 })
-  * });
-  * ```
+ * @example
+ * ```typescript
+ * import { Axiom } from 'bdr';
+ *
+ * configureBDR({
+ *   axiom: new Axiom({ retries: 5 })
+ * });
+ * ```
  */
 export function configureBDR(config?: BDRConfig): void {
     if (!config) return;
@@ -190,7 +190,4 @@ export { formatTitle } from './utils';
 // It should be configured via defineBDRConfig or directly
 
 // Type exports
-export type {
-    BDRConfig,
-    BDRPlugin
-} from './types';
+export type { BDRConfig, BDRPlugin } from './types';

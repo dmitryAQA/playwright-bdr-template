@@ -1,8 +1,15 @@
 import playwright from "eslint-plugin-playwright";
 import tsParser from "@typescript-eslint/parser";
+import prettier from "eslint-plugin-prettier";
+import prettierConfig from "eslint-config-prettier";
 
 export default [
     playwright.configs["flat/recommended"],
+    {
+        plugins: {
+            prettier: prettier,
+        },
+    },
     {
         files: ["tests/**/*.ts", "src/**/*.ts"],
         languageOptions: {
@@ -12,6 +19,7 @@ export default [
             }
         },
         rules: {
+            "prettier/prettier": "error",
             "playwright/expect-expect": "off",
             "playwright/no-networkidle": "error",
             "playwright/no-wait-for-timeout": "error",
@@ -20,6 +28,7 @@ export default [
             "playwright/no-force-option": "error",
         }
     },
+    prettierConfig,
     {
         files: ["tests/**/*.ts", "src/**/*.ts"],
         rules: {

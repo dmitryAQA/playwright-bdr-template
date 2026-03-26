@@ -1,46 +1,52 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../src/fixtures/index';
 import { BDR } from '../../src/bdr/bdr';
+import { UserFactory } from '../../src/factories/UserFactory';
+import { ProductFactory } from '../../src/factories/ProductFactory';
+import { CatalogKey } from '../../src/data/Catalog';
 
-test.describe('Inline BDR Demo (Flexible)', () => {
-
+test.describe('Inline BDR Demo (Model Patterns)', () => {
     test('Successful Login (Inline BDD Style)', async ({ page }) => {
-        // No Page Objects needed here - great for quick scripts or debugging
+        const user = UserFactory.createFromSystem('STANDARD');
 
         await BDR.Given('User is on the login page', { retryable: true }, async () => {
             await page.goto('/');
         });
 
-        await BDR.When('User logs in as standard_user', async () => {
-            await page.fill('[data-test="username"]', 'standard_user');
-            await page.fill('[data-test="password"]', 'secret_sauce');
-            await page.click('[data-test="login-button"]');
+        await BDR.When('User logs in as {}', user.username, async () => {
+            // Using standard high-priority Playwright locators (Role/TestID)
+            await page.getByPlaceholder('Username').fill(user.username);
+            await page.getByPlaceholder('Password').fill(user.password!);
+            await page.getByRole('button', { name: 'Login' }).click();
         });
 
         await BDR.Then('Inventory page is visible', { retryable: true }, async () => {
-            await expect(page.locator('.inventory_list')).toBeVisible();
+            // Using TestID instead of fragile CSS classes
+            await expect(page.getByTestId('inventory-container')).toBeVisible();
         });
     });
 
-    test('Data Driven Test (Inline)', async ({ page }) => {
-        const items = ['Sauce Labs Backpack', 'Sauce Labs Bike Light'];
+    test('Data-Driven Sequence (Inline)', async ({ page }) => {
+        const user = UserFactory.createFromSystem('STANDARD');
+        const catalogKeys: CatalogKey[] = ['BACKPACK', 'BIKE_LIGHT'];
+        const items = catalogKeys.map((key) => ProductFactory.createFromCatalog(key));
+        const expectedBadge = items.length.toString();
 
-        await BDR.Given('User is logged in', { retryable: true }, async () => {
+        await BDR.Given('User is logged in as {}', user.username, async () => {
             await page.goto('/');
-            await page.fill('[data-test="username"]', 'standard_user');
-            await page.fill('[data-test="password"]', 'secret_sauce');
-            await page.click('[data-test="login-button"]');
+            await page.getByPlaceholder('Username').fill(user.username);
+            await page.getByPlaceholder('Password').fill(user.password!);
+            await page.getByRole('button', { name: 'Login' }).click();
         });
 
         for (const item of items) {
-            await BDR.When(`User adds "${item}" to cart`, async () => {
-                const id = item.toLowerCase().replace(/ /g, '-');
-                await page.click(`[data-test="add-to-cart-${id}"]`);
+            await BDR.When('User adds product "{}" to cart', item.name, async () => {
+                // Use IDs provided by the Catalog instead of string manipulation guesses
+                await page.getByTestId(`add-to-cart-${item.id}`).click();
             });
         }
 
-        await BDR.Then('Cart badge shows "2"', { retryable: true }, async () => {
-            await expect(page.locator('.shopping_cart_badge')).toHaveText('2');
+        await BDR.Then('Cart badge shows {}', expectedBadge, async (count: string) => {
+            await expect(page.getByTestId('shopping-cart-badge')).toHaveText(count);
         });
     });
-
 });
