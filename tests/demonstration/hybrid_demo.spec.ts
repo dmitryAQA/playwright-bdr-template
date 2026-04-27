@@ -1,7 +1,6 @@
 import { test } from '../../src/fixtures';
 import { BDR } from '../../src/bdr/bdr';
 import { attachTable } from '../../src/bdr/tables';
-import { User, Product, UserRole, ProductCategory, UserProfile } from '../../src/types/BusinessEntities';
 import { UserFactory } from '../../src/factories/UserFactory';
 import { ProductFactory } from '../../src/factories/ProductFactory';
 import { ProfileFactory } from '../../src/factories/ProfileFactory';

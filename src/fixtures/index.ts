@@ -10,10 +10,8 @@ import { LoginPage } from '../pom/LoginPage';
 import { InventoryPage } from '../pom/InventoryPage';
 import { CartPage } from '../pom/CartPage';
 import { UserApiClient } from '../api/clients/UserApiClient';
-import { generateIdempotencyKey } from '../api/infrastructure/Idempotency';
 import { createIdempotentApi } from '../api/infrastructure/ApiWrapper';
 import { TestConfig } from '../config/TestConfig';
-import { hashCode } from '../utils/CryptoUtils';
 import { setupSeededFaker } from '../utils/FakerUtils';
 
 /**
