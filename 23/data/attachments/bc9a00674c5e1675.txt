@@ -1,0 +1,2 @@
+Pinging environment: https://www.saucedemo.com
+Environment is UP and ready for testing.
