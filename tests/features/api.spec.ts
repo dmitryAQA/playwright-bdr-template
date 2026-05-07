@@ -1,9 +1,10 @@
-import { test } from '../../src/fixtures';
-import { BDR } from '../../src/bdr/bdr';
-import { attachTable } from '../../src/bdr/tables';
-import { UserFactory } from '../../src/factories/UserFactory';
-import { ProfileFactory } from '../../src/factories/ProfileFactory';
-import { createUserFlow } from '../../src/flows';
+import { test, BDR, attachTable, UserFactory, ProfileFactory, UserFlow, UserApiClient } from '../../src/fixtures';
+
+/* eslint-disable no-restricted-syntax */
+function createUserFlow(request: any) {
+    return new UserFlow(new UserApiClient(request));
+}
+/* eslint-enable no-restricted-syntax */
 
 test.describe('API BDR Demo', () => {
     test('User Authentication and Profile Check via API', async ({ request }) => {

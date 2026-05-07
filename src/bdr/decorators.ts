@@ -10,7 +10,6 @@
  * 2. Standard Decorators (Stage 3) -> (value, context)
  */
 
-import { test } from '@playwright/test';
 import { formatTitle } from './utils';
 import { getPlugins, getAxiom } from './index';
 
@@ -72,6 +71,7 @@ export function Step(title: string, options: StepOptions = {}) {
 
                 // If no plugins wrapped it (or even if they did), ensure it's at least reported as a step
                 if (!axiom && plugins.length === 0) {
+                    const { test } = await import('@playwright/test');
                     return test.step(stepName, currentStepFn);
                 }
 

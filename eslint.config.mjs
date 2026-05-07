@@ -61,7 +61,7 @@ export default [
         },
     },
     {
-        files: ['src/flows/**/*.ts', '!src/flows/index.ts'],
+        files: ['src/flows/**/*.ts', 'src/flows/index.ts'],
         rules: {
             // Rule #10: BDR Flow Enforcement
             // Every public method in a Flow class must have a @Step decorator
@@ -86,7 +86,7 @@ export default [
     {
         files: ['tests/**/*.ts'],
         rules: {
-            // Lead Standard: Test Architectural Guardrails
+            // Test Architectural Guardrails
             // Explicit creation via factory functions is preferred over fixture magic
             'no-restricted-syntax': [
                 'error',

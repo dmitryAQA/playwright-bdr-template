@@ -1,8 +1,4 @@
-import { test, expect } from '../../src/fixtures/index';
-import { BDR } from '../../src/bdr/bdr';
-import { UserFactory } from '../../src/factories/UserFactory';
-import { ProductFactory } from '../../src/factories/ProductFactory';
-import { CatalogKey } from '../../src/data/Catalog';
+import { test, expect, BDR, UserFactory, ProductFactory, CatalogKey } from '../../src/fixtures';
 
 test.describe('Inline BDR Demo (Model Patterns)', () => {
     test('Successful Login (Inline BDD Style)', async ({ page }) => {

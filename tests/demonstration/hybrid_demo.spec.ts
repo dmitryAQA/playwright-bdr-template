@@ -1,10 +1,39 @@
-import { test } from '../../src/fixtures';
-import { BDR } from '../../src/bdr/bdr';
-import { attachTable } from '../../src/bdr/tables';
-import { UserFactory } from '../../src/factories/UserFactory';
-import { ProductFactory } from '../../src/factories/ProductFactory';
-import { ProfileFactory } from '../../src/factories/ProfileFactory';
-import { createAuthFlow, createInventoryFlow, createCartFlow, createUserFlow } from '../../src/flows';
+import {
+    test,
+    BDR,
+    attachTable,
+    UserFactory,
+    ProductFactory,
+    ProfileFactory,
+    AuthFlow,
+    InventoryFlow,
+    CartFlow,
+    UserFlow,
+    LoginPage,
+    InventoryPage,
+    CartPage,
+    UserApiClient,
+    Page,
+} from '../../src/fixtures';
+import type { APIRequestContext } from '@playwright/test';
+
+/* eslint-disable no-restricted-syntax */
+function createAuthFlow(page: Page) {
+    return new AuthFlow(new LoginPage(page), new InventoryPage(page));
+}
+
+function createInventoryFlow(page: Page) {
+    return new InventoryFlow(new InventoryPage(page));
+}
+
+function createCartFlow(page: Page) {
+    return new CartFlow(new CartPage(page), page);
+}
+
+function createUserFlow(request: APIRequestContext) {
+    return new UserFlow(new UserApiClient(request as any));
+}
+/* eslint-enable no-restricted-syntax */
 
 test.describe('Hybrid BDR Demo: API + UI', () => {
     test('E2E: Rapid Checkout (Success - Mocked API)', async ({ page, request, faker }) => {

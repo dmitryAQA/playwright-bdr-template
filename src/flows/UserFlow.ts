@@ -1,7 +1,5 @@
-import { expect } from '@playwright/test';
+import { expect, UserApiClient, type User } from '../fixtures';
 import { Step } from '../bdr/decorators';
-import { UserApiClient } from '../api/clients/UserApiClient';
-import { User } from '../types/BusinessEntities';
 
 export class UserFlow {
     constructor(private userApi: UserApiClient) {}

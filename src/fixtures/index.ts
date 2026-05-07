@@ -1,62 +1,49 @@
-import { test as base, APIRequestContext, expect } from '@playwright/test';
-// eslint-disable-next-line no-restricted-imports
-import { faker } from '@faker-js/faker';
-import { attachInfraDetector } from '../bdr/bdr';
-import { createIdempotentApi } from '../api/infrastructure/ApiWrapper';
-import { TestConfig } from '../config/TestConfig';
-import { setupSeededFaker } from '../utils/FakerUtils';
+import { mergeTests, expect, type Page } from '@playwright/test';
+import { test as helpers } from './helpers';
+import { test as api } from './api';
+import { test as pom } from './pom';
+import { test as flows } from './flows';
+import { test as factories } from './factories';
+import { test as bdr } from './bdr';
 
-/**
- * Infrastructure Fixtures
- *
- * Fixtures are reserved for objects with managed lifecycle (setup/teardown)
- * or global state. Business objects (POMs, Flows) are created explicitly
- * in tests to keep dependencies visible.
- */
-type BdrFixtures = {
-    // Infrastructure
-    runId: string;
-    faker: typeof faker;
+import { AuthFlow } from '../flows/AuthFlow';
+import { InventoryFlow } from '../flows/InventoryFlow';
+import { CartFlow } from '../flows/CartFlow';
+import { UserFlow } from '../flows/UserFlow';
+import { LoginPage } from '../pom/LoginPage';
+import { InventoryPage } from '../pom/InventoryPage';
+import { CartPage } from '../pom/CartPage';
+import { UserApiClient } from '../api/clients/UserApiClient';
+import { ProductFactory } from '../factories/ProductFactory';
+import { ProfileFactory } from '../factories/ProfileFactory';
+import { UserFactory } from '../factories/UserFactory';
+import { BDR } from '../bdr/bdr';
+import { attachTable, attachCompareTable } from '../bdr/tables';
 
-    /**
-     * Idempotent API wrapper: Automatically adds X-Idempotency-Key
-     * based on request body to prevent double-spending/double-creation.
-     */
-    api: any;
-};
-
-export const test = base.extend<BdrFixtures>({
-    /**
-     * RUN_ID: Unique identifier for the current CI run or local execution.
-     * Used for data isolation (Rule #1).
-     */
-    runId: [
-        async ({}, use) => {
-            await use(TestConfig.runId);
-        },
-        { scope: 'test' },
-    ],
-
-    /**
-     * Seeded Faker: Provides deterministic but unique data for each test.
-     * Rule: Unique between runs, stable between retries.
-     */
-    faker: async ({ runId }, use, testInfo) => {
-        await use(await setupSeededFaker(runId, testInfo));
-    },
-
-    // Auto-attach infra detector to each page
-    page: async ({ page }, use) => {
-        attachInfraDetector(page);
-        await use(page);
-    },
-
-    /**
-     * API Context with Idempotency Support
-     */
-    api: async ({ request, runId }: { request: APIRequestContext; runId: string }, use: (r: any) => Promise<void>) => {
-        await use(createIdempotentApi(request, runId));
-    },
-});
+// Merge all fixture layers
+export const test = mergeTests(helpers, api, pom, flows, factories, bdr);
 
 export { expect };
+export { type StepOptions } from '../bdr/decorators';
+export { type User, type Product, UserRole } from '../types/BusinessEntities';
+export type { SystemUserKey } from '../data/SystemUsers';
+export type { CatalogKey } from '../data/Catalog';
+export {
+    AuthFlow,
+    InventoryFlow,
+    CartFlow,
+    UserFlow,
+    LoginPage,
+    InventoryPage,
+    CartPage,
+    UserApiClient,
+    ProductFactory,
+    ProfileFactory,
+    UserFactory,
+    BDR,
+    attachTable,
+    attachCompareTable,
+};
+
+// Re-export types for consumers
+export type { Page };

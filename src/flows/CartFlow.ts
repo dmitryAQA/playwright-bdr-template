@@ -1,8 +1,5 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Page, type Product, CartPage, attachTable } from '../fixtures';
 import { Step } from '../bdr/decorators';
-import { Product } from '../types/BusinessEntities';
-import { CartPage } from '../pom/CartPage';
-import { attachTable } from '../bdr/tables';
 
 export class CartFlow {
     constructor(

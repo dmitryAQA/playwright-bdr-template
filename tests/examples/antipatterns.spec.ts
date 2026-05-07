@@ -1,4 +1,4 @@
-import { test, expect } from '../../src/fixtures/index';
+import { test, expect } from '../../src/fixtures';
 
 /**
  * Lead Hall of Shame: Anti-patterns (Rules #9-11)

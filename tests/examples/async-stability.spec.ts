@@ -1,5 +1,4 @@
-import { test, expect } from '../../src/fixtures/index';
-import { BDR } from '../../src/bdr/bdr';
+import { test, expect, BDR } from '../../src/fixtures';
 
 /**
  * Lead Standard Example: Async Stability (Rule #5)

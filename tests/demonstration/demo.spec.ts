@@ -1,9 +1,31 @@
-import { test } from '../../src/fixtures';
-import { BDR } from '../../src/bdr/bdr';
-import { attachTable } from '../../src/bdr/tables';
-import { UserFactory } from '../../src/factories/UserFactory';
-import { ProductFactory } from '../../src/factories/ProductFactory';
-import { createAuthFlow, createInventoryFlow, createCartFlow } from '../../src/flows';
+import {
+    test,
+    BDR,
+    attachTable,
+    UserFactory,
+    ProductFactory,
+    AuthFlow,
+    InventoryFlow,
+    CartFlow,
+    LoginPage,
+    InventoryPage,
+    CartPage,
+    Page,
+} from '../../src/fixtures';
+
+/* eslint-disable no-restricted-syntax */
+function createAuthFlow(page: Page) {
+    return new AuthFlow(new LoginPage(page), new InventoryPage(page));
+}
+
+function createInventoryFlow(page: Page) {
+    return new InventoryFlow(new InventoryPage(page));
+}
+
+function createCartFlow(page: Page) {
+    return new CartFlow(new CartPage(page), page);
+}
+/* eslint-enable no-restricted-syntax */
 
 test.describe('Class-Based BDR Demo (Recommended / Golden Standard)', () => {
     test('E2E Purchase Flow: Login -> Add to Cart -> Checkout', async ({ page }) => {

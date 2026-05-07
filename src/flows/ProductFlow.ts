@@ -1,6 +1,5 @@
+import { type Product, attachTable } from '../fixtures';
 import { Step } from '../bdr/decorators';
-import { Product } from '../types/BusinessEntities';
-import { attachTable } from '../bdr/tables';
 
 /**
  * ProductFlow

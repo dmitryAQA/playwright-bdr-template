@@ -1,8 +1,5 @@
-import { expect } from '@playwright/test';
-import { Step, StepOptions } from '../bdr/decorators';
-import { User } from '../types/BusinessEntities';
-import { LoginPage } from '../pom/LoginPage';
-import { InventoryPage } from '../pom/InventoryPage';
+import { expect, type StepOptions, type User, LoginPage, InventoryPage } from '../fixtures';
+import { Step } from '../bdr/decorators';
 
 export class AuthFlow {
     // DI: Inject POMs

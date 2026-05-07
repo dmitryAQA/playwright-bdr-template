@@ -1,8 +1,4 @@
-import { test, expect } from '../../src/fixtures/index';
-import { BDR } from '../../src/bdr/bdr';
-import { attachCompareTable } from '../../src/bdr/tables';
-import { UserFactory } from '../../src/factories/UserFactory';
-import { UserRole } from '../../src/types/BusinessEntities';
+import { test, expect, BDR, attachCompareTable, UserFactory, UserRole } from '../../src/fixtures';
 
 test.describe('Rich Diagnostics Demonstration', () => {
     test('Failure Demo: Data Mismatch with Rich Table', async ({ page, faker }) => {

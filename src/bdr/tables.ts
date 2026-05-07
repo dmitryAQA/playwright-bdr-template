@@ -1,5 +1,3 @@
-import { test } from '@playwright/test';
-
 /**
  * Attaches a stylized HTML table to the current test report.
  * @param name The name of the attachment (e.g., "Input Data").
@@ -9,6 +7,7 @@ export async function attachTable(name: string, data: any[]) {
     if (!data || data.length === 0) return;
 
     const html = generateHtmlTable(data);
+    const { test } = await import('@playwright/test');
     await test.info().attach(name, {
         body: Buffer.from(html),
         contentType: 'text/html',

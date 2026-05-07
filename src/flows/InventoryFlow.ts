@@ -1,7 +1,5 @@
-import { expect } from '@playwright/test';
-import { Step, StepOptions } from '../bdr/decorators';
-import { Product } from '../types/BusinessEntities';
-import { InventoryPage } from '../pom/InventoryPage';
+import { expect, type StepOptions, type Product, InventoryPage } from '../fixtures';
+import { Step } from '../bdr/decorators';
 
 export class InventoryFlow {
     constructor(private inventoryPage: InventoryPage) {}

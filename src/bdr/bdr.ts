@@ -8,7 +8,7 @@
  *   await BDR.Then('User sees dashboard', async () => { ... });
  */
 
-import { test, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { formatTitle } from './utils';
 import { getPlugins, getBaseURL, getAxiom } from './index';
 // Axiom is accessed via getAxiom() to ensure zero-dependency if folder is missing
@@ -78,7 +78,10 @@ const createStep = (prefix: string) => {
             currentStepFn = async () => axiom.executeGroup(stepName, executionFn, options);
         } else {
             // Graceful Degradation: Standard Playwright step
-            currentStepFn = async () => test.step(stepName, executionFn);
+            currentStepFn = async () => {
+                const { test } = await import('@playwright/test');
+                return test.step(stepName, executionFn);
+            };
         }
 
         // Apply OTHER plugin hooks (backward compatibility)

@@ -1,8 +1,14 @@
-import { test, expect } from '../../src/fixtures';
+import { test, expect, User, LoginPage, InventoryPage, AuthFlow } from '../../src/fixtures';
 import { CATALOG } from '../../src/data/Catalog';
-import { User } from '../../src/types/BusinessEntities';
-import { createAuthFlow } from '../../src/flows';
 import path from 'path';
+
+/* eslint-disable no-restricted-syntax */
+function createAuthFlow(page: any) {
+    const loginPage = new LoginPage(page);
+    const inventoryPage = new InventoryPage(page);
+    return new AuthFlow(loginPage, inventoryPage);
+}
+/* eslint-enable no-restricted-syntax */
 
 /**
  * Authentication Setup

@@ -1,9 +1,4 @@
-import { test, expect } from '../../src/fixtures/index';
-import { BDR } from '../../src/bdr/bdr';
-import { attachTable } from '../../src/bdr/tables';
-import { UserFactory } from '../../src/factories/UserFactory';
-import { ProductFactory } from '../../src/factories/ProductFactory';
-import { SystemUserKey } from '../../src/data/SystemUsers';
+import { test, expect, BDR, attachTable, UserFactory, ProductFactory, SystemUserKey } from '../../src/fixtures';
 
 test.describe('Enhanced BDR Features (Model Patterns)', () => {
     test('Parameterized Steps with Data-Driven Inputs', async ({ page }) => {
