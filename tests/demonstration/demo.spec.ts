@@ -3,9 +3,14 @@ import { BDR } from '../../src/bdr/bdr';
 import { attachTable } from '../../src/bdr/tables';
 import { UserFactory } from '../../src/factories/UserFactory';
 import { ProductFactory } from '../../src/factories/ProductFactory';
+import { createAuthFlow, createInventoryFlow, createCartFlow } from '../../src/flows';
 
 test.describe('Class-Based BDR Demo (Recommended / Golden Standard)', () => {
-    test('E2E Purchase Flow: Login -> Add to Cart -> Checkout', async ({ authFlow, inventoryFlow, cartFlow }) => {
+    test('E2E Purchase Flow: Login -> Add to Cart -> Checkout', async ({ page }) => {
+        const authFlow = createAuthFlow(page);
+        const inventoryFlow = createInventoryFlow(page);
+        const cartFlow = createCartFlow(page);
+
         // Data-Driven Determinism (Rule #4)
         const testUser = UserFactory.createFromSystem('STANDARD');
         const testProduct = ProductFactory.createFromCatalog('BACKPACK');
@@ -31,7 +36,8 @@ test.describe('Class-Based BDR Demo (Recommended / Golden Standard)', () => {
         });
     });
 
-    test('Failed login via BDR Flow', async ({ authFlow }) => {
+    test('Failed login via BDR Flow', async ({ page }) => {
+        const authFlow = createAuthFlow(page);
         const lockedUser = UserFactory.createFromSystem('LOCKED_OUT');
 
         await BDR.Given('User is on the login page', async () => {

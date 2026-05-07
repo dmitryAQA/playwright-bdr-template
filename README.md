@@ -1,3 +1,7 @@
+---
+title: Playwright Reference
+---
+
 # Playwright BDR Template (TypeScript Reference Implementation)
 
 > **"Minimum Magic, Maximum Control"** — The engineering standard for scaling test automation to 1000+ tests without Gherkin.

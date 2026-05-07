@@ -4,15 +4,15 @@ import { attachTable } from '../../src/bdr/tables';
 import { UserFactory } from '../../src/factories/UserFactory';
 import { ProductFactory } from '../../src/factories/ProductFactory';
 import { ProfileFactory } from '../../src/factories/ProfileFactory';
+import { createAuthFlow, createInventoryFlow, createCartFlow, createUserFlow } from '../../src/flows';
 
 test.describe('Hybrid BDR Demo: API + UI', () => {
-    test('E2E: Rapid Checkout (Success - Mocked API)', async ({
-        userFlow,
-        authFlow,
-        inventoryFlow,
-        cartFlow,
-        faker,
-    }) => {
+    test('E2E: Rapid Checkout (Success - Mocked API)', async ({ page, request, faker }) => {
+        const userFlow = createUserFlow(request);
+        const authFlow = createAuthFlow(page);
+        const inventoryFlow = createInventoryFlow(page);
+        const cartFlow = createCartFlow(page);
+
         // Direct object mocking (no crutches, just JS)
         // @ts-ignore
         const api = userFlow.userApi;

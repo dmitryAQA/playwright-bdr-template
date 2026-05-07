@@ -1,6 +1,7 @@
 import { test, expect } from '../../src/fixtures';
 import { CATALOG } from '../../src/data/Catalog';
 import { User } from '../../src/types/BusinessEntities';
+import { createAuthFlow } from '../../src/flows';
 import path from 'path';
 
 /**
@@ -13,8 +14,10 @@ import path from 'path';
  */
 const authFile = path.join(__dirname, '../../playwright/.auth/user.json');
 
-test('Authenticate as Standard User', async ({ page, baseURL, authFlow }) => {
+test('Authenticate as Standard User', async ({ page, baseURL }) => {
     expect(baseURL).toBeDefined();
+
+    const authFlow = createAuthFlow(page);
 
     console.log('Performing Global Auth Setup via AuthFlow...');
 

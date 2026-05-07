@@ -3,9 +3,11 @@ import { BDR } from '../../src/bdr/bdr';
 import { attachTable } from '../../src/bdr/tables';
 import { UserFactory } from '../../src/factories/UserFactory';
 import { ProfileFactory } from '../../src/factories/ProfileFactory';
+import { createUserFlow } from '../../src/flows';
 
 test.describe('API BDR Demo', () => {
-    test('User Authentication and Profile Check via API', async ({ userFlow }) => {
+    test('User Authentication and Profile Check via API', async ({ request }) => {
+        const userFlow = createUserFlow(request);
         const testUser = UserFactory.createFromSystem('DMITRY');
         const testProfile = ProfileFactory.createFromProfiles('DMITRY');
 
